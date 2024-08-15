@@ -1,6 +1,6 @@
 
 
-class TenantService {
+class CompanyService {
     constructor(prismaClient) {
         this.prisma = prismaClient;
     }
@@ -12,7 +12,7 @@ class TenantService {
      * @param {*} pageSize 
      * @returns 
      */
-    async getAllTenants(page = 1, pageSize = 10, search = '', order = 'asc', orderBy = 'name') {
+    async getAllCompanies(page = 1, pageSize = 10, search = '', order = 'asc', orderBy = 'name') {
         try {
             const currentPage = parseInt(page, 10);
             const limit = parseInt(pageSize, 10);
@@ -21,7 +21,7 @@ class TenantService {
             const where = search
                 ? {
                     OR: [
-                        { tenant_code: { contains: search.toLowerCase() } },  
+                        { company_code: { contains: search.toLowerCase() } },  
                         { name: { contains: search.toLowerCase() } },
                     ],
                 }
@@ -29,13 +29,20 @@ class TenantService {
 
             const orderByClause = orderBy ? { [orderBy]: order } : { id: 'asc' };
             const [items, totalItems] = await this.prisma.$transaction([
-                this.prisma.tenant.findMany({
+                this.prisma.company.findMany({
                     where: where,
+                    include: {
+                        tenant: {
+                            select: {
+                                name: true,        // Ambil nama tenant
+                            },
+                        },
+                    },
                     skip: skip,
                     take: limit,
                     orderBy: orderByClause,
                 }),
-                this.prisma.tenant.count(),
+                this.prisma.company.count(),
             ]);
 
             const totalPages = Math.ceil(totalItems / limit);
@@ -50,6 +57,7 @@ class TenantService {
                 },
             };
         } catch (error) {
+            console.log("🚀 ~ CompanyService ~ getAllCompanies ~ error:", error)
             throw new Error('Error Get All tenant');
         }
 
@@ -61,10 +69,17 @@ class TenantService {
      * @param {*} tenantCode 
      * @returns 
      */
-    async getTenantById(tenant_code) {
+    async getCompanyById(company_code) {
         try {
-            return await this.prisma.tenant.findUnique({
-                where: { tenant_code },
+            return await this.prisma.company.findUnique({
+                where: { company_code },
+                include: {
+                    tenant: {
+                        select: {
+                            name: true,        // Ambil nama tenant
+                        },
+                    },
+                },
             });
         } catch (error) {
             throw new Error(`Error Get One tenant`);
@@ -77,9 +92,9 @@ class TenantService {
      * @param {*} data 
      * @returns 
      */
-    async createTenant(data) {
+    async createCompany(data) {
         try {
-            return await this.prisma.tenant.create({
+            return await this.prisma.company.create({
                 data,
             });
         } catch (error) {
@@ -90,14 +105,14 @@ class TenantService {
 
     /**
      * 
-     * @param {*} tenant_code 
+     * @param {*} company_code 
      * @param {*} data 
      * @returns 
      */
-    async updateTenant(tenant_code, data) {
+    async updateCompany(company_code, data) {
         try {
-            return await this.prisma.tenant.update({
-                where: { tenant_code: String(tenant_code) },
+            return await this.prisma.company.update({
+                where: { company_code: String(company_code) },
                 data: data,
             });
         } catch (error) {
@@ -112,10 +127,10 @@ class TenantService {
      * @param {*} id 
      * @returns 
      */
-    async deleteTenant(tenant_code) {
+    async deleteCompany(company_code) {
         try {
-            const deletedItem = await this.prisma.tenant.delete({
-                where: { tenant_code: String(tenant_code) },
+            const deletedItem = await this.prisma.company.delete({
+                where: { company_code: String(company_code) },
             });
             return deletedItem;
         } catch (error) {
@@ -123,18 +138,6 @@ class TenantService {
         }
     }
 
-
-    /**
-     * 
-     * @param {*} tenant_code 
-     * @returns 
-     */
-    async checkTenantExists(tenant_code) {
-        return await this.prisma.tenant.findUnique({
-            where: { tenant_code: tenant_code }
-        });
-    }
-
 }
 
-module.exports = TenantService;
+module.exports = CompanyService;
