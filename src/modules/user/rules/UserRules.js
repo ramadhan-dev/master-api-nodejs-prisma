@@ -3,18 +3,44 @@ const zod = require('zod')
 
 exports.create = zod.object({
     body: zod.object({
-        EmployeeCode: zod
+        password: zod
+            .string()
+            .min(5),
+        name: zod
             .string()
             .min(3),
-        FirstName: zod
-            .string()
-            .min(3),
-        Email: zod
+        email: zod
             .string()
             .email(),
-        PhoneNumber: zod
+        tenant_code: zod
+            .string(),
+        company_code: zod
+            .string(),
+        division_code: zod
             .string()
-            .regex(/^\+?[0-9]{10,15}$/, "The phone number must consist of 10-15 digits."),
+            
+
+    }),
+})
+
+
+
+
+exports.update = zod.object({
+    body: zod.object({
+        name: zod
+            .string()
+            .min(3),
+        email: zod
+            .string()
+            .email(),
+        tenant_code: zod
+            .string(),
+        company_code: zod
+            .string(),
+        division_code: zod
+            .string()
+
 
     }),
 })

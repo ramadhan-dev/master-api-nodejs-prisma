@@ -1,3 +1,7 @@
+const bcrypt = require("bcryptjs");
+
+
+
 // Function to get formatted date string (YYYY-MM-DD)
 function getFormattedDate() {
     const now = new Date();
@@ -7,7 +11,15 @@ function getFormattedDate() {
     return `${year}-${month}-${day}`;
 }
 
-// Export logger and middleware
+
+
+
+const hashedPassword = async (password) => {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt); //hashedPassword
+}
+
 module.exports = {
-    getFormattedDate
+    getFormattedDate,
+    hashedPassword
 };

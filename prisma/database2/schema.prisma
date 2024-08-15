@@ -14,7 +14,7 @@ model Tenant {
   tenant_code String      @unique
   name        String
   companies   Company[]
-  // users       User[]
+  users       User[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 }
@@ -27,7 +27,7 @@ model Company {
   tenant      Tenant      @relation(fields: [tenant_code], references: [tenant_code])
   divisions   Division[]
   // projects    Project[]
-  // users       User[]
+  users       User[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
@@ -38,28 +38,28 @@ model Division {
   name        String
   company_code String
   company     Company     @relation(fields: [company_code], references: [company_code])
-  // users       User[]
+  users       User[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
 
-// model User {
-//   id          Int        @id @default(autoincrement())
-//   email       String      @unique
-//   name        String
-//   password    String
-//   tenant_code String
-//   tenant      Tenant      @relation(fields: [tenant_code], references: [tenant_code])
-//   company_code String
-//   company     Company     @relation(fields: [company_code], references: [company_code])
-//   divisionId  Int?
-//   division    Division?   @relation(fields: [divisionId], references: [id])
-//   attendances Attendance[]
-//   userProjects UserProject[]
-//   userRoles   UserRole[]
-//   createdAt   DateTime    @default(now())
-//   updatedAt   DateTime    @updatedAt
-// }
+model User {
+  id          Int        @id @default(autoincrement())
+  email       String      @unique
+  name        String
+  password    String
+  tenant_code String
+  tenant      Tenant      @relation(fields: [tenant_code], references: [tenant_code])
+  company_code String
+  company     Company     @relation(fields: [company_code], references: [company_code])
+  division_code  String?
+  division    Division?   @relation(fields: [division_code], references: [division_code])
+  // attendances Attendance[]
+  // userProjects UserProject[]
+  // userRoles   UserRole[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
 
 // model Role {
 //   id          Int        @id @default(autoincrement())

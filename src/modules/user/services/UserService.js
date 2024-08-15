@@ -1,5 +1,4 @@
 
-const logger = require(process.cwd() + '/src/utility/logger');
 
 class UserService {
     constructor(prismaClient) {
@@ -22,22 +21,40 @@ class UserService {
             const where = search
                 ? {
                     OR: [
-                        { Email: { contains: search.toLowerCase() } },  
-                        { FirstName: { contains: search.toLowerCase() } },
+                        { email: { contains: search.toLowerCase() } },  
+                        { name: { contains: search.toLowerCase() } },
                     ],
                 }
                 : {};
 
             const orderByClause = orderBy ? { [orderBy]: order } : { id: 'asc' };
+           
             
             const [items, totalItems] = await this.prisma.$transaction([
-                this.prisma.employee.findMany({
+                this.prisma.user.findMany({
                     where: where,
+                    include: {
+                        tenant: {
+                            select: {
+                                name: true,       
+                            },
+                        },
+                        company: {
+                            select: {
+                                name: true,       
+                            },
+                        },
+                        division: {
+                            select: {
+                                name: true,       
+                            },
+                        },
+                    },
                     skip: skip,
                     take: limit,
                     orderBy: orderByClause,
                 }),
-                this.prisma.employee.count(),
+                this.prisma.user.count(),
             ]);
 
             const totalPages = Math.ceil(totalItems / limit);
@@ -53,7 +70,7 @@ class UserService {
             };
         } catch (error) {
             console.log("🚀 ~ UserService ~ getAllUsers ~ error:", error)
-            throw new Error('Error Get All employee');
+            throw new Error('Error Get All User');
         }
 
     }
@@ -61,13 +78,30 @@ class UserService {
 
     /**
      * 
-     * @param {*} EmployeeCode 
+     * @param {*} user_id 
      * @returns 
      */
-    async getUserById(EmployeeCode) {
+    async getUserById(user_id) {
         try {
-            return await this.prisma.employee.findUnique({
-                where: { EmployeeCode },
+            return await this.prisma.user.findUnique({
+                where: { id: user_id },
+                include: {
+                    tenant: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                    company: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                    division: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                },
             });
         } catch (error) {
             throw new Error(`Error Get One employee`);
@@ -82,29 +116,29 @@ class UserService {
      */
     async createUser(data) {
         try {
-            return await this.prisma.employee.create({
+            return await this.prisma.user.create({
                 data,
             });
         } catch (error) {
-            throw new Error('Error create Employee');
+            throw new Error('Error create User');
         }
     }
 
 
     /**
      * 
-     * @param {*} EmployeeCode 
+     * @param {*} user_id 
      * @param {*} data 
      * @returns 
      */
-    async updateUser(EmployeeCode, data) {
+    async updateUser(user_id, data) {
         try {
-            return await this.prisma.employee.update({
-                where: { EmployeeCode: String(EmployeeCode) },
+            return await this.prisma.user.update({
+                where: { id: user_id },
                 data: data,
             });
         } catch (error) {
-            throw new Error('Error updating Employee');
+            throw new Error('Error updating User');
         }
     }
 
@@ -115,10 +149,10 @@ class UserService {
      * @param {*} id 
      * @returns 
      */
-    async deleteUser(EmployeeCode) {
+    async deleteUser(user_id) {
         try {
-            const deletedItem = await this.prisma.employee.delete({
-                where: { EmployeeCode: String(EmployeeCode) },
+            const deletedItem = await this.prisma.user.delete({
+                where: { id: user_id },
             });
             return deletedItem;
         } catch (error) {
