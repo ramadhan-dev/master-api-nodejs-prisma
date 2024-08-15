@@ -17,32 +17,8 @@ class PrismaClientFactory {
                     duration: e.duration,  // Durasi eksekusi query
                     timestamp: new Date().toISOString(), // Timestamp
                 };
-                console.log("🚀 ~ PrismaClientFactory ~ prisma.$on ~ logMessage:", logMessage)
-
-                // Log the query
                 logger.info(JSON.stringify(logMessage));
             });
-            // prisma.$use(async (params, next) => {
-            //     const before = Date.now();
-
-            //     const result = await next(params);
-
-            //     const after = Date.now();
-            //     const duration = after - before;
-            //     const query = `${params.model}.${params.action}(${JSON.stringify(params.args)})`;
-            //     console.log("🚀 ~ PrismaClientFactory ~ prisma.$use ~ params:", query)
-
-            //     const logMessage = {
-            //         query,
-            //         params,
-            //         duration,
-            //         timestamp: new Date().toISOString(),
-            //     };
-
-            //     logger.info(JSON.stringify(logMessage));
-
-            //     return result;
-            // });
         }
 
         const config = dbConfig[env] || dbConfig.default;
@@ -54,24 +30,14 @@ class PrismaClientFactory {
 
     static createInstanceDB2(env = 'default') {
         function addPrismaLoggingMiddleware(prisma) {
-            prisma.$use(async (params, next) => {
-                const before = Date.now();
-
-                const result = await next(params);
-
-                const after = Date.now();
-                const duration = after - before;
-
+            prisma.$on('query', (e) => {
                 const logMessage = {
-                    query: params,
-                    duration,
-                    timestamp: new Date().toISOString(),
+                    sql: e.query,          // SQL query yang dieksekusi
+                    params: e.params,      // Parameter yang digunakan dalam query
+                    duration: e.duration,  // Durasi eksekusi query
+                    timestamp: new Date().toISOString(), // Timestamp
                 };
-
-                // Log the query
-                logger.info(logMessage);
-
-                return result;
+                logger.info(JSON.stringify(logMessage));
             });
         }
         const config = dbConfig[env] || dbConfig.default;
