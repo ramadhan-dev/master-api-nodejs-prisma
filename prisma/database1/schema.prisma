@@ -16,5 +16,6 @@ model Employee {
   PhoneNumber     String   @unique
   FirstName     String 
   LastName      String?
+  Status      Int@default(1)
   createdAt DateTime @default(now())
 }

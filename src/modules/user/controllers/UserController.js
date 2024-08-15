@@ -1,3 +1,5 @@
+
+
 class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -13,6 +15,7 @@ class UserController {
         try {
             const { page, pageSize, search, order, orderBy } = req.query;
             const users = await this.userService.getAllUsers(page, pageSize, search, order, orderBy);
+            res.locals.responseBody = JSON.stringify(users);
             res.json(users);
         } catch (error) {
             res.status(500).json({ error: 'Failed to get all Employee' });

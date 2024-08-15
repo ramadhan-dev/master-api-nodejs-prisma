@@ -1,8 +1,22 @@
 'use strict';
 
 var morgan = require('morgan');
-var os = require('os');
-var logger = require('morgan');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const { getFormattedDate } = require('./../helper/helper');
+
+// Ensure logs directory exists
+const logDir = 'logs/morgan';
+
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir);
+}
+
+// Create a write stream (in append mode) for Morgan logs
+const fileName = `access_${getFormattedDate()}.log`;
+const accessLogStream = fs.createWriteStream(path.join(logDir, fileName), { flags: 'a' });
+
 
 /**
  * get Conversation-Id
@@ -50,13 +64,29 @@ morgan.token('response-time-seconds', function getResponseTimeInSeconds(req, res
 
 
 /**
- * 
- * @returns 
+ * get payload
  */
-module.exports = function loggingMiddleware() {
-    return morgan(jsonFormat);
-};
+morgan.token('payload', function getResponseTimeInSeconds(req, res) {
+    return req.body
+})
 
+
+/**
+ * get payload
+ */
+morgan.token('response-body', function getResponseTimeInSeconds(req, res) {
+    if (res.locals.responseBody) {
+        try {
+            // Attempt to format response body as pretty JSON
+            return JSON.parse(res.locals.responseBody);
+        } catch (err) {
+            // If response body is not JSON, return as is
+            return res.locals.responseBody;
+        }
+    } else {
+        return 'N/A';
+    }
+})
 
 /**
  * 
@@ -83,5 +113,18 @@ function jsonFormat(tokens, req, res) {
         'instance': tokens['instance-id'](req, res),
         'pid': tokens['pid'](req, res),
         'response-time-seconds': tokens['response-time-seconds'](req, res),
+        'payload': tokens['payload'](req, res),
+        'response-body': tokens['response-body'](req, res) || 'N/A', // Add response body to log
     });
 }
+
+
+
+const morganMiddleware = morgan(jsonFormat, { stream: accessLogStream });
+
+
+
+// Export logger and middleware
+module.exports = {
+    morganMiddleware
+};

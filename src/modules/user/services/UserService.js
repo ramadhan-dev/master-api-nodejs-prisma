@@ -1,3 +1,6 @@
+
+const logger = require(process.cwd() + '/src/utility/logger');
+
 class UserService {
     constructor(prismaClient) {
         this.prisma = prismaClient;
@@ -26,7 +29,6 @@ class UserService {
                 : {};
 
             const orderByClause = orderBy ? { [orderBy]: order } : { id: 'asc' };
-            console.log("🚀 ~ UserService ~ getAllUsers ~ orderByClause:", orderByClause)
             
             const [items, totalItems] = await this.prisma.$transaction([
                 this.prisma.employee.findMany({
