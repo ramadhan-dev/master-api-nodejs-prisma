@@ -4,8 +4,10 @@ const fs = require('fs');
 const path = require('path');
 
 const UserRouter = require('../modules/user/routes/userRoute')
+const TenantRoute = require('../modules/master/tenant/routes/tenantRoute')
 
 app.use('/api/user', UserRouter);
+app.use('/api/tenant', TenantRoute);
 
 
 
