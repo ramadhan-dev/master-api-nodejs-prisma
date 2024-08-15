@@ -25,22 +25,23 @@ model Company {
   name        String
   tenant_code String
   tenant      Tenant      @relation(fields: [tenant_code], references: [tenant_code])
-  // divisions   Division[]
+  divisions   Division[]
   // projects    Project[]
   // users       User[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
 
-// model Division {
-//   id          Int        @id @default(autoincrement())
-//   name        String
-//   company_code String
-//   company     Company     @relation(fields: [company_code], references: [company_code])
-//   users       User[]
-//   createdAt   DateTime    @default(now())
-//   updatedAt   DateTime    @updatedAt
-// }
+model Division {
+  id          Int        @id @default(autoincrement())
+  division_code        String     @unique
+  name        String
+  company_code String
+  company     Company     @relation(fields: [company_code], references: [company_code])
+  // users       User[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
 
 // model User {
 //   id          Int        @id @default(autoincrement())

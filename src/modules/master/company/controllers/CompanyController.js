@@ -82,6 +82,12 @@ class CompanyController {
             if (!tenant) {
                 return res.status(400).json({ error: 'Invalid Tenant Code' });
             }
+
+            // Periksa apakah tenant ada
+            const company = await this.companyService.checkCompanyExists(company_code);
+            if (!company) {
+                return res.status(400).json({ error: 'Invalid Company Code' });
+            }
             
             const user = await this.companyService.updateCompany(company_code, data);
             res.status(201).json(user);
@@ -99,6 +105,13 @@ class CompanyController {
     async deleteCompany(req, res) {
         try {
             const { company_code } = req.params;
+
+            // Periksa apakah tenant ada
+            const company = await this.companyService.checkCompanyExists(company_code);
+            if (!company) {
+                return res.status(400).json({ error: 'Invalid Company Code' });
+            }
+
             const user = await this.companyService.deleteCompany(company_code);
             res.status(201).json(user);
         } catch (error) {

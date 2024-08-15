@@ -13,10 +13,10 @@ const tenantService = new TenantService(prismaDB2);
 const tenantController = new TenantController(tenantService);
 
 router.get('/getAll', tenantController.getAllTenants.bind(tenantController));
+router.post('/create', validate(tenantRule.create), tenantController.createTenant.bind(tenantController));
 router.get('/getOne/:tenant_code', tenantController.getTenant.bind(tenantController));
 router.put('/update/:tenant_code', tenantController.updateTenant.bind(tenantController));
 router.delete('/delete/:tenant_code', tenantController.deleteTenant.bind(tenantController));
-router.post('/create', validate(tenantRule.create), tenantController.createTenant.bind(tenantController));
 
 module.exports = router;
 
