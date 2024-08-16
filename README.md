@@ -14,10 +14,10 @@ fungsi yang tersedia pada peoject ini antara lain
 
 Function      | Create             | Read                | Update             | Delete            |
 :------------ | :------------------| :-------------------| :------------------|-------------------|
-Tenant        | :heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:|
-Company        | :heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:|
-Division        | :heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:|
-USER        | :heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:|
+Tenant        | :white_check_mark: |  :white_check_mark: | :white_check_mark: | :white_check_mark:|
+Company        | :white_check_mark: |  :white_check_mark: | :white_check_mark: | :white_check_mark:|
+Division        | :white_check_mark: |  :white_check_mark: | :white_check_mark: | :white_check_mark:|
+USER        | :white_check_mark: |  :white_check_mark: | :white_check_mark: | :white_check_mark:|
 
 
 ## Autentication
