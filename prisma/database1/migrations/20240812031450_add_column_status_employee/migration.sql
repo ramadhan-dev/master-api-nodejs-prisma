@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `employee` ADD COLUMN `Status` INTEGER NOT NULL DEFAULT 1;

@@ -1,0 +1,148 @@
+datasource db {
+  provider  = "postgresql"
+  // url      = "postgresql://postgres.kmtzopdlijuglphypvuj:8rARigH_4q7cHTs@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/database2"
+}
+
+model Tenant {
+  id          Int       @id @default(autoincrement())
+  tenant_code String    @unique
+  name        String
+  companies   Company[]
+  users       User[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Company {
+  id           Int        @id @default(autoincrement())
+  company_code String     @unique
+  name         String
+  tenant_code  String
+  tenant       Tenant     @relation(fields: [tenant_code], references: [tenant_code])
+  divisions    Division[]
+  // projects    Project[]
+  users        User[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Division {
+  id            Int      @id @default(autoincrement())
+  division_code String   @unique
+  name          String
+  company_code  String
+  company       Company  @relation(fields: [company_code], references: [company_code])
+  users         User[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  name          String
+  password      String
+  tenant_code   String
+  tenant        Tenant         @relation(fields: [tenant_code], references: [tenant_code])
+  company_code  String
+  company       Company        @relation(fields: [company_code], references: [company_code])
+  division_code String?
+  division      Division?      @relation(fields: [division_code], references: [division_code])
+  // attendances Attendance[]
+  // userProjects UserProject[]
+  // userRoles   UserRole[]
+  userLocation  UserLocation[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model UserLocation {
+  id        Int      @id @default(autoincrement())
+  name      String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  lat       String
+  lng       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// model Role {
+//   id          Int        @id @default(autoincrement())
+//   name        String
+//   userRoles   UserRole[]
+//   rolePermissions RolePermission[]
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+// }
+
+// model Permission {
+//   id          Int        @id @default(autoincrement())
+//   name        String
+//   rolePermissions RolePermission[]
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+// }
+
+// model Attendance {
+//   id          Int        @id @default(autoincrement())
+//   date        DateTime
+//   status      String
+//   userId      Int
+//   user        User        @relation(fields: [userId], references: [id])
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+// }
+
+// model Project {
+//   id          Int        @id @default(autoincrement())
+//   name        String
+//   company_code String
+//   company     Company     @relation(fields: [company_code], references: [company_code])
+//   userProjects UserProject[]
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+// }
+
+// model UserProject {
+//   id          Int        @id @default(autoincrement())
+//   userId      Int
+//   projectId   Int
+//   user        User        @relation(fields: [userId], references: [id])
+//   project     Project     @relation(fields: [projectId], references: [id])
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+
+//   @@unique([userId, projectId])
+// }
+
+// model UserRole {
+//   id          Int        @id @default(autoincrement())
+//   userId      Int
+//   roleId      Int
+//   user        User        @relation(fields: [userId], references: [id])
+//   role        Role        @relation(fields: [roleId], references: [id])
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+
+//   @@unique([userId, roleId])
+// }
+
+// model RolePermission {
+//   id          Int        @id @default(autoincrement())
+//   roleId      Int
+//   permissionId Int
+//   role        Role        @relation(fields: [roleId], references: [id])
+//   permission  Permission  @relation(fields: [permissionId], references: [id])
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+
+//   @@unique([roleId, permissionId])
+// }

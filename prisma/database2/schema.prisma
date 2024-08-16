@@ -1,13 +1,14 @@
 datasource db {
-  provider = "mysql"
-  url      = "mysql://root@localhost:3306/toko2"
+  provider = "postgresql"
+  // url      = "postgresql://postgres.kmtzopdlijuglphypvuj:8rARigH_4q7cHTs@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/database2"
 }
-
 
 model Tenant {
   id          Int        @id @default(autoincrement())

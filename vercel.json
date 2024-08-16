@@ -1,15 +1,16 @@
 {
-    "version":2,
+    "version": 2,
     "builds": [
-    {
-        "src": "index.js",
-        "use": "@vercel/node"
-    }
-],
+        {
+            "src": "index.js",
+            "use": "@vercel/node"
+        }
+    ],
     "routes": [
-    {
-        "src": "/(.*)",
-        "dest": "/"
-    }
-]
+        {
+            "src": "/(.*)",
+            "dest": "/"
+        }
+    ],
+    "buildCommand": "yarn install && yarn prisma generate --schema=prisma/database1/schema.prisma && yarn prisma generate --schema=prisma/database1/schema.prisma "
 }

@@ -4,14 +4,14 @@ const mongoSanitize = require("express-mongo-sanitize")
 const hpp = require("hpp");
 const rateLimit = require("express-rate-limit");
 
-const {morganMiddleware} = require("./src/utility/morgan")
+//const {morganMiddleware} = require("./src/utility/morgan")
 const cors = require("./src/utility/cors");
 const helmetConfig = require("./src/utility/helmet");
 const routes = require('./src/routes');
 const app = express();
 
 
-app.use(morganMiddleware);
+// app.use(morganMiddleware);
 app.use(cors.create())
 app.use(helmetConfig)
 app.use(mongoSanitize())
