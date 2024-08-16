@@ -54,8 +54,8 @@ class DivisionController {
             const data = req?.body;
 
             // Periksa apakah tenant ada
-            const tenant = await this.companyService.checkCompanyExists(data.company_code);
-            if (!tenant) {
+            const company = await this.companyService.checkCompanyExists(data.company_code);
+            if (!company) {
                 return res.status(400).json({ error: 'Invalid Company Code' });
             }
             const user = await this.divisionService.createDivision(data);

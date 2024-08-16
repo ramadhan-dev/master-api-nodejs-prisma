@@ -1,4 +1,5 @@
 const { hashedPassword } = require(process.cwd() + '/src/helper/helper')
+const { checkAttrCode } = require(process.cwd() + '/src/helper/checkAttrCodeHelper');
 
 class UserController {
     constructor(userService, tenantService, companyService, divisionService) {
@@ -21,7 +22,6 @@ class UserController {
             res.locals.responseBody = JSON.stringify(users);
             res.json(users);
         } catch (error) {
-            console.log("🚀 ~ UserController ~ getUsers ~ error:", error)
             res.status(500).json({ error: 'Failed to get all Employeeee' });
         }
     }
@@ -57,15 +57,22 @@ class UserController {
         try {
             const data = req?.body;
             
-            await this.checkAttrCode(req, res)
+            // await this.checkAttrCode(req, res)
+            
+            const checkPayload = checkAttrCode(req, res, this.tenantService, this.companyService, this.divisionService);
 
-            const passwordHash = await hashedPassword(data?.password)
-            const payload =  {
-                ...data,
-                password: passwordHash, // Simpan password yang telah di-hash
-            }
-            const user = await this.userService.createUser(payload);
-            res.status(201).json(user);
+            checkPayload.then(async (response) => {
+                if (!response?.status) return res.status(400).json({ error: response?.message});
+
+                const passwordHash = await hashedPassword(data?.password)
+                const payload = {
+                    ...data,
+                    password: passwordHash, // Simpan password yang telah di-hash
+                }
+                const user = await this.userService.createUser(payload);
+                res.status(201).json(user);
+            })
+
         } catch (error) {
             res.status(500).json({ error: 'Failed to create Employee' });
         }
@@ -82,10 +89,13 @@ class UserController {
             const userId = parseInt(req.params.user_id);
             const data = req.body;
 
-            await this.checkAttrCode(req, res)
-
-            const user = await this.userService.updateUser(userId, data);
-            res.status(201).json(user);
+            const checkPayload = checkAttrCode(req, res, this.tenantService, this.companyService, this.divisionService);
+            checkPayload.then(async (response) => {
+                if (!response?.status) return res.status(400).json({ error: response?.message });
+           
+                const user = await this.userService.updateUser(userId, data);
+                return res.status(201).json(user);
+            })
         } catch (error) {
             res.status(500).json({ error: 'Failed to update User' });
         }
@@ -101,7 +111,7 @@ class UserController {
         try {
             const userId = parseInt(req.params.user_id);
 
-            await this.checkAttrCode(req, res)
+            // await this.checkAttrCode(req, res)
 
             const user = await this.userService.deleteUser(userId);
             res.status(201).json(user);
@@ -111,28 +121,28 @@ class UserController {
     }
 
 
-    async checkAttrCode(req, res) {
-        const data = req.body
-        // Periksa apakah tenant ada
-        const tenant = await this.tenantService.checkTenantExists(data.tenant_code);
-        if (!tenant) {
-            return res.status(400).json({ error: 'Invalid Tenant Code' });
-        }
+    // async checkAttrCode(req, res) {
+    //     const data = req.body
+    //     // Periksa apakah tenant ada
+    //     const tenant = await this.tenantService.checkTenantExists(data.tenant_code);
+    //     if (!tenant) {
+    //         return res.status(400).json({ error: 'Invalid Tenant Code' });
+    //     }
 
-        // Periksa apakah company ada
-        const company = await this.companyService.checkCompanyExists(data.company_code);
-        if (!company) {
-            return res.status(400).json({ error: 'Invalid Company Code' });
-        }
+    //     // Periksa apakah company ada
+    //     const company = await this.companyService.checkCompanyExists(data.company_code);
+    //     if (!company) {
+    //         return res.status(400).json({ error: 'Invalid Company Code' });
+    //     }
 
-        // Periksa apakah division ada
-        const division = await this.divisionService.checkDivisionExists(data.division_code);
-        if (!division) {
-            return res.status(400).json({ error: 'Invalid Division Code' });
-        }
+    //     // Periksa apakah division ada
+    //     const division = await this.divisionService.checkDivisionExists(data.division_code);
+    //     if (!division) {
+    //         return res.status(400).json({ error: 'Invalid Division Code' });
+    //     }
         
-        return true
-    }
+    //     return true
+    // }
 }
 
 module.exports = UserController;
