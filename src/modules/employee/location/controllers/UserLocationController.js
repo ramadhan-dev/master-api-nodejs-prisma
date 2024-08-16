@@ -35,8 +35,10 @@ class UserLocationController {
         try {
             const user = await this.userLocationService.getUserLocationById(String(req.params.user_location_id));
             if (!user) {
-                return res.status(404).json({ error: 'User Location Not Found' });
+                return res.status(400).json(this.formatResponse('', 'User Location Not Found', 400))
             }
+
+            
             return res.status(200).json(this.formatResponse(user))
         } catch (error) {
             return res.status(500).json(this.formatResponse('', 'Failed to get User Location', 500))

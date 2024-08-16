@@ -8,6 +8,7 @@ const validate = require(process.cwd() + '/src/utility/validation')
 const TenantService = require('../../../master/tenant/services/TenantService');
 const CompanyService = require('../../../master/company/services/CompanyService');
 const DivisionService = require('../../../master/division/services/DivisionService');
+const formatResponse = require(process.cwd() + '/src/utility/responseFormatter');
 
 
 const router = express.Router();
@@ -19,7 +20,7 @@ const tenantService = new TenantService(prismaDB2);
 const companyService = new CompanyService(prismaDB2);
 const divisionService = new DivisionService(prismaDB2);
 
-const userController = new UserController(userService, tenantService, companyService, divisionService);
+const userController = new UserController(userService, tenantService, companyService, divisionService, formatResponse);
 
 router.get('/getAll', userController.getUsers.bind(userController));
 router.get('/getOne/:user_id', userController.getUser.bind(userController));

@@ -2,11 +2,12 @@ const { hashedPassword } = require(process.cwd() + '/src/helper/helper')
 const { checkAttrCode } = require(process.cwd() + '/src/helper/checkAttrCodeHelper');
 
 class UserController {
-    constructor(userService, tenantService, companyService, divisionService) {
+    constructor(userService, tenantService, companyService, divisionService, formatResponse) {
         this.userService = userService;
         this.tenantService = tenantService;
         this.companyService = companyService;
         this.divisionService = divisionService;
+        this.formatResponse = formatResponse;
     }
 
 
@@ -20,9 +21,9 @@ class UserController {
             const { page, pageSize, search, order, orderBy } = req.query;
             const users = await this.userService.getAllUsers(page, pageSize, search, order, orderBy);
             res.locals.responseBody = JSON.stringify(users);
-            res.json(users);
+            return res.status(200).json(this.formatResponse(users))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to get all Employeeee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to get all Employee', 500))
         }
     }
 
@@ -38,11 +39,12 @@ class UserController {
             const userId = parseInt(req.params.user_id);
             const user = await this.userService.getUserById(userId);
             if (!user) {
-                return res.status(404).json({ error: 'User Not Found' });
+                return res.status(400).json(this.formatResponse('', 'User Not Found', 400))
             }
-            res.json(user);
+
+            return res.status(200).json(this.formatResponse(user))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to get Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to get Employee', 500))
         }
     }
 
@@ -62,7 +64,8 @@ class UserController {
             const checkPayload = checkAttrCode(req, res, this.tenantService, this.companyService, this.divisionService);
 
             checkPayload.then(async (response) => {
-                if (!response?.status) return res.status(400).json({ error: response?.message});
+                if (!response?.status) return res.status(400).json(this.formatResponse('', response?.message, 400))
+
 
                 const passwordHash = await hashedPassword(data?.password)
                 const payload = {
@@ -70,11 +73,12 @@ class UserController {
                     password: passwordHash, // Simpan password yang telah di-hash
                 }
                 const user = await this.userService.createUser(payload);
-                res.status(201).json(user);
+                return res.status(200).json(this.formatResponse(user))
+
             })
 
         } catch (error) {
-            res.status(500).json({ error: 'Failed to create Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to create Employee', 500))
         }
     }
 
@@ -91,13 +95,13 @@ class UserController {
 
             const checkPayload = checkAttrCode(req, res, this.tenantService, this.companyService, this.divisionService);
             checkPayload.then(async (response) => {
-                if (!response?.status) return res.status(400).json({ error: response?.message });
+                if (!response?.status) return res.status(400).json(this.formatResponse('', response?.message, 400))
            
                 const user = await this.userService.updateUser(userId, data);
-                return res.status(201).json(user);
+                return res.status(200).json(this.formatResponse(user))
             })
         } catch (error) {
-            res.status(500).json({ error: 'Failed to update User' });
+            return res.status(500).json(this.formatResponse('', 'Failed to update Employee', 500))
         }
     }
 
@@ -111,38 +115,13 @@ class UserController {
         try {
             const userId = parseInt(req.params.user_id);
 
-            // await this.checkAttrCode(req, res)
-
             const user = await this.userService.deleteUser(userId);
-            res.status(201).json(user);
+            return res.status(200).json(this.formatResponse(user))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to delete Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to delete Employee', 500))
         }
     }
 
-
-    // async checkAttrCode(req, res) {
-    //     const data = req.body
-    //     // Periksa apakah tenant ada
-    //     const tenant = await this.tenantService.checkTenantExists(data.tenant_code);
-    //     if (!tenant) {
-    //         return res.status(400).json({ error: 'Invalid Tenant Code' });
-    //     }
-
-    //     // Periksa apakah company ada
-    //     const company = await this.companyService.checkCompanyExists(data.company_code);
-    //     if (!company) {
-    //         return res.status(400).json({ error: 'Invalid Company Code' });
-    //     }
-
-    //     // Periksa apakah division ada
-    //     const division = await this.divisionService.checkDivisionExists(data.division_code);
-    //     if (!division) {
-    //         return res.status(400).json({ error: 'Invalid Division Code' });
-    //     }
-        
-    //     return true
-    // }
 }
 
 module.exports = UserController;
