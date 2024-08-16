@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const archiver = require('archiver');
 
-const logDir = 'logs';
+const logDir = 'logger';
 
 // Create logs directory if not exists
 if (!fs.existsSync(logDir)) {
