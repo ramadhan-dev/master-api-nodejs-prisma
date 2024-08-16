@@ -177,6 +177,22 @@ class UserService {
         }
     }
 
+
+    /**
+ * 
+ * @param {*} user_id 
+ * @returns 
+ */
+    async checkUserExists(user_id) {
+        try {
+            return await this.prisma.user.findUnique({
+                where: { id: user_id }
+            });
+        } catch (error) {
+            throw new Error(`Error Get One User By User Id`);
+        }
+    }
+
     
 }
 

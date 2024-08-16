@@ -1,7 +1,7 @@
 const express =require('express');
-const PrismaClientFactory = require('../../../database/prismaClientFactory');
+const PrismaClientFactory = require(process.cwd() +'/src/database/prismaClientFactory');
 const AuthService = require('../services/AuthService');
-const UserService = require('../../user/services/UserService');
+const UserService = require('../../employee/user/services/UserService');
 const AuthController = require('../controllers/AuthController');
 const authRule = require('../rules/AuthRules')
 const validate = require(process.cwd() + '/src/utility/validation')
