@@ -1,9 +1,10 @@
 
 
 class UserLocationController {
-    constructor(companyService, userService) {
+    constructor(companyService, userService, formatResponse) {
         this.userLocationService = companyService;
         this.userService = userService;
+        this.formatResponse = formatResponse;
     }
 
 
@@ -17,9 +18,9 @@ class UserLocationController {
             const { page, pageSize, search, order, orderBy } = req.query;
             const company = await this.userLocationService.getAllUserLocation(page, pageSize, search, order, orderBy);
             res.locals.responseBody = JSON.stringify(company);
-            res.json(company);
+            return res.status(200).json(this.formatResponse(company))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to get all User Location' });
+            return res.status(500).json(this.formatResponse('', 'Failed to get all User Location', 500))
         }
     }
 
@@ -36,9 +37,9 @@ class UserLocationController {
             if (!user) {
                 return res.status(404).json({ error: 'User Location Not Found' });
             }
-            res.json(user);
+            return res.status(200).json(this.formatResponse(user))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to get Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to get User Location', 500))
         }
     }
 
@@ -56,13 +57,14 @@ class UserLocationController {
             // Periksa apakah tenant ada
             const user = await this.userService.checkUserExists(data.userId);
             if (!user) {
-                return res.status(400).json({ error: 'Invalid User ID' });
+                return res.status(400).json(this.formatResponse('', 'Failed to get User Location', 400))
             }
             
+
             const response = await this.userLocationService.createUserLocation(data);
-            res.status(201).json(response);
+            return res.status(200).json(this.formatResponse(response))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to create Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to create User Location', 500))
         }
     }
 
@@ -80,20 +82,19 @@ class UserLocationController {
             // Periksa apakah tenant ada
             const user = await this.userService.checkUserExists(data.userId);
             if (!user) {
-                return res.status(400).json({ error: 'Invalid User Id' });
+                return res.status(400).json(this.formatResponse('', 'Invalid User Id', 400))
             }
 
             // Periksa apakah tenant ada
             const userLocation = await this.userLocationService.checkUserLocationExists(user_location_id);
             if (!userLocation) {
-                return res.status(400).json({ error: 'Invalid User Location ' });
+                return res.status(400).json(this.formatResponse('', 'Invalid User Location Id', 400))
             }
             
             const response = await this.userLocationService.updateUserLocation(user_location_id, data);
-            res.status(201).json(response);
+            return res.status(200).json(this.formatResponse(response))
         } catch (error) {
-            console.log("🚀 ~ UserLocationController ~ updateUserLocation ~ error:", error)
-            res.status(500).json({ error: 'Failed to update Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to update User Location', 500))
         }
     }
 
@@ -110,13 +111,13 @@ class UserLocationController {
             // Periksa apakah tenant ada
             const userLocation = await this.userLocationService.checkUserLocationExists(user_location_id);
             if (!userLocation) {
-                return res.status(400).json({ error: 'Invalid User Location ' });
+                return res.status(400).json(this.formatResponse('', 'Invalid User Location Id', 400))
             }
 
-            const user = await this.userLocationService.deleteUserLocation(user_location_id);
-            res.status(201).json(user);
+            const response = await this.userLocationService.deleteUserLocation(user_location_id);
+            return res.status(200).json(this.formatResponse(response))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to delete User Location' });
+            return res.status(500).json(this.formatResponse('', 'Failed to delete User Location', 500))
         }
     }
 }

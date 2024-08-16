@@ -4,6 +4,7 @@ const UserLocationService = require('../services/UserLocationService');
 const UserLocationController = require('../controllers/UserLocationController');
 const UserLocationRules = require('../rules/UserLocationRules')
 const validate = require(process.cwd() + '/src/utility/validation')
+const formatResponse = require(process.cwd() + '/src/utility/responseFormatter');
 
 const UserService = require('./../../user/services/UserService')
 
@@ -13,7 +14,7 @@ const prismaDB2 = PrismaClientFactory.createInstanceDB2();
 
 const userLocationService = new UserLocationService(prismaDB2);
 const userService = new UserService(prismaDB2);
-const userLocationController = new UserLocationController(userLocationService, userService);
+const userLocationController = new UserLocationController(userLocationService, userService, formatResponse);
 
 router.get('/getAll', userLocationController.getAllUserLocation.bind(userLocationController));
 router.post('/create', validate(UserLocationRules.create), userLocationController.createUserLocation.bind(userLocationController));

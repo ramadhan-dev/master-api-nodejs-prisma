@@ -21,7 +21,7 @@ class UserLocationService {
             const where = search
                 ? {
                     OR: [
-                        { company_code: { contains: search.toLowerCase() } },
+                        { division_code: { contains: search.toLowerCase() } },
                         { name: { contains: search.toLowerCase() } },
                     ],
                 }

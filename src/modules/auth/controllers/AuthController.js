@@ -1,13 +1,12 @@
-const { hashedPassword } = require(process.cwd() + '/src/helper/helper')
-const { checkAttrCode } = require(process.cwd() + '/src/helper/checkAttrCodeHelper');
 const { isNull } = require('lodash');
 const bcrypt = require('bcryptjs');
 const CreateToken = require("../../../utility/CreateToken");
 
 class UserController {
-    constructor(authService, userService) {
+    constructor(authService, userService, formatResponse) {
         this.authService = authService;
         this.userService = userService;
+        this.formatResponse = formatResponse;
     }
 
 
@@ -20,7 +19,6 @@ class UserController {
         try {
             const { email, password } = req.body;
 
-            // let user =await DataModel.aggregate({$match:{email:email}});
             let user = await this.userService.getUserByEmail(email); 
 
             if (isNull(user)) {
@@ -33,11 +31,15 @@ class UserController {
 
                     let TokenData = { email: user?.email, id: user?.name, }
                     let token = await CreateToken(TokenData);
-                    res.status(200).json({ message: "success", token: token, user: user });
+                    const data = {
+                        'token' :token,
+                        'user' : user  
+                    }
+                    return res.status(200).json(this.formatResponse(data))
                 }
             }
         } catch (error) {
-            res.status(500).json({ error: 'Failed to get all Employe' });
+            return res.status(500).json(this.formatResponse('', 'Failed to login'))
         }
     }
 

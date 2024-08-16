@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const { PrismaClient: PrismaClientDb1 } = require('../../prisma/generated/database1');
 const { PrismaClient: PrismaClientDb2 } = require('../../prisma/generated/database2');
-// const logger = require(process.cwd() + '/src/utility/logger');
+const logger = require(process.cwd() + '/src/utility/logger');
 
 const dbConfig = require('../config/dbConfig');
 
@@ -17,7 +17,7 @@ class PrismaClientFactory {
                     duration: e.duration,  // Durasi eksekusi query
                     timestamp: new Date().toISOString(), // Timestamp
                 };
-                // logger.info(JSON.stringify(logMessage));
+                logger.info(JSON.stringify(logMessage));
             });
         }
 
