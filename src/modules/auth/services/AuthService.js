@@ -160,24 +160,6 @@ class UserService {
         }
     }
 
-
-
-    /**
-     * 
-     * @param {*} email 
-     * @returns 
-     */
-    async getUserByEmail(email) {
-        try {
-            return await this.prisma.user.findUnique({
-                where: { email: email }
-            });
-        } catch (error) {
-            throw new Error(`Error Get One User By Email`);
-        }
-    }
-
-    
 }
 
 module.exports = UserService;

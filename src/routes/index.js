@@ -3,15 +3,23 @@ const app = express();
 const fs = require('fs');
 const path = require('path');
 
+const AuthRoute = require('../modules/auth/routes/authRoute')
+
 const UserRouter = require('../modules/user/routes/userRoute')
 const TenantRoute = require('../modules/master/tenant/routes/tenantRoute')
 const CompanyRoute = require('../modules/master/company/routes/companyRoute')
 const DivisionRoute = require('../modules/master/division/routes/DivisionRoute')
 
-app.use('/api/user', UserRouter);
-app.use('/api/tenant', TenantRoute);
-app.use('/api/company', CompanyRoute);
-app.use('/api/division', DivisionRoute);
+// Middleware 
+const {verifyToken} = require('./../middleware/AuthMiddleware')
+
+app.use('/api/auth',  AuthRoute);
+
+
+app.use('/api/user', verifyToken, UserRouter);
+app.use('/api/tenant', verifyToken,  TenantRoute);
+app.use('/api/company', verifyToken, CompanyRoute);
+app.use('/api/division', verifyToken,  DivisionRoute);
 
 
 
