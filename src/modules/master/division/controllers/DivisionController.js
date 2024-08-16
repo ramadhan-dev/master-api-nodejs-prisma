@@ -1,9 +1,10 @@
 
 
 class DivisionController {
-    constructor(divisionService, companyService) {
+    constructor(divisionService, companyService, formatResponse) {
         this.divisionService = divisionService;
         this.companyService = companyService;
+        this.formatResponse = formatResponse;
     }
 
 
@@ -17,9 +18,9 @@ class DivisionController {
             const { page, pageSize, search, order, orderBy } = req.query;
             const company = await this.divisionService.getAllDivisions(page, pageSize, search, order, orderBy);
             res.locals.responseBody = JSON.stringify(company);
-            res.json(company);
+            return res.status(200).json(this.formatResponse(company))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to get all Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to get all Division', 500))
         }
     }
 
@@ -34,11 +35,12 @@ class DivisionController {
         try {
             const user = await this.divisionService.getDivisionById(String(req.params.division_code));
             if (!user) {
-                return res.status(404).json({ error: 'Division Not Found' });
+                return res.status(400).json(this.formatResponse('', 'Division Not Found', 400))
             }
-            res.json(user);
+
+            return res.status(200).json(this.formatResponse(user))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to get Division' });
+            return res.status(500).json(this.formatResponse('', 'Failed to get Division', 500))
         }
     }
 
@@ -56,12 +58,13 @@ class DivisionController {
             // Periksa apakah tenant ada
             const company = await this.companyService.checkCompanyExists(data.company_code);
             if (!company) {
-                return res.status(400).json({ error: 'Invalid Company Code' });
+                return res.status(400).json(this.formatResponse('', 'Invalid Company Code', 400))
+
             }
             const user = await this.divisionService.createDivision(data);
-            res.status(201).json(user);
+            return res.status(200).json(this.formatResponse(user))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to create Division' });
+            return res.status(500).json(this.formatResponse('', 'Failed to create Division', 500))
         }
     }
 
@@ -79,19 +82,20 @@ class DivisionController {
             // Periksa apakah tenant ada
             const company = await this.companyService.checkCompanyExists(data.company_code);
             if (!company) {
-                return res.status(400).json({ error: 'Invalid Company Code' });
+                return res.status(400).json(this.formatResponse('', 'Invalid Company Code', 400))
             }
 
             // Periksa apakah tenant ada
             const division = await this.divisionService.checkDivisionExists(division_code);
             if (!division) {
-                return res.status(400).json({ error: 'Invalid Division Code' });
+                return res.status(400).json(this.formatResponse('', 'Invalid Division Code', 400))
+
             }
             
             const user = await this.divisionService.updateDivision(division_code, data);
-            res.status(201).json(user);
+            return res.status(200).json(this.formatResponse(user))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to update Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to update Employee', 500))
         }
     }
 
@@ -108,13 +112,14 @@ class DivisionController {
             // Periksa apakah Division ada
             const division = await this.divisionService.checkDivisionExists(division_code);
             if (!division) {
-                return res.status(400).json({ error: 'Invalid Division Code' });
+                return res.status(400).json(this.formatResponse('', 'Invalid Division Code', 400))
+
             }
 
             const user = await this.divisionService.deleteDivision(division_code);
-            res.status(201).json(user);
+            return res.status(200).json(this.formatResponse(user))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to delete Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to delete Employee', 500))
         }
     }
 }
