@@ -1,9 +1,10 @@
 
 
 class CompanyController {
-    constructor(companyService, tenantService) {
+    constructor(companyService, tenantService, formatResponse) {
         this.companyService = companyService;
         this.tenantService = tenantService;
+        this.formatResponse = formatResponse;
     }
 
 
@@ -17,9 +18,9 @@ class CompanyController {
             const { page, pageSize, search, order, orderBy } = req.query;
             const company = await this.companyService.getAllCompanies(page, pageSize, search, order, orderBy);
             res.locals.responseBody = JSON.stringify(company);
-            res.json(company);
+            return res.status(200).json(this.formatResponse(company))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to get all Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to get all Company', 500))
         }
     }
 
@@ -34,11 +35,12 @@ class CompanyController {
         try {
             const user = await this.companyService.getCompanyById(String(req.params.company_code));
             if (!user) {
-                return res.status(404).json({ error: 'Company Not Found' });
+                return res.status(400).json(this.formatResponse('', 'Company Not Found', 400))
             }
-            res.json(user);
+
+            return res.status(200).json(this.formatResponse(user))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to get Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to get Company', 500))
         }
     }
 
@@ -56,13 +58,13 @@ class CompanyController {
             // Periksa apakah tenant ada
             const tenant = await this.tenantService.checkTenantExists(data.tenant_code);
             if (!tenant) {
-                return res.status(400).json({ error: 'Invalid Tenant Code' });
+                return res.status(400).json(this.formatResponse('', 'Invalid Tenant Coded', 400))
             }
             
             const user = await this.companyService.createCompany(data);
-            res.status(201).json(user);
+            return res.status(200).json(this.formatResponse(user))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to create Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to create Company', 500))
         }
     }
 
@@ -80,19 +82,19 @@ class CompanyController {
             // Periksa apakah tenant ada
             const tenant = await this.tenantService.checkTenantExists(data.tenant_code);
             if (!tenant) {
-                return res.status(400).json({ error: 'Invalid Tenant Code' });
+                return res.status(400).json(this.formatResponse('', 'Invalid Tenant Code', 400))
             }
 
             // Periksa apakah tenant ada
             const company = await this.companyService.checkCompanyExists(company_code);
             if (!company) {
-                return res.status(400).json({ error: 'Invalid Company Code' });
+                return res.status(400).json(this.formatResponse('', 'Invalid Company Code', 400))
             }
             
             const user = await this.companyService.updateCompany(company_code, data);
-            res.status(201).json(user);
+            return res.status(200).json(this.formatResponse(user))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to update Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to Update Company', 500))
         }
     }
 
@@ -109,13 +111,13 @@ class CompanyController {
             // Periksa apakah tenant ada
             const company = await this.companyService.checkCompanyExists(company_code);
             if (!company) {
-                return res.status(400).json({ error: 'Invalid Company Code' });
+                return res.status(400).json(this.formatResponse('', 'Invalid Company Code', 400))
             }
 
             const user = await this.companyService.deleteCompany(company_code);
-            res.status(201).json(user);
+            return res.status(200).json(this.formatResponse(user))
         } catch (error) {
-            res.status(500).json({ error: 'Failed to delete Employee' });
+            return res.status(500).json(this.formatResponse('', 'Failed to delete Company', 500))
         }
     }
 }
