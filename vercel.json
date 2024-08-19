@@ -11,6 +11,5 @@
             "src": "/(.*)",
             "dest": "/"
         }
-    ],
-    "buildCommand": "yarn install && yarn prisma generate --schema=prisma/database1/schema.prisma && yarn prisma generate --schema=prisma/database1/schema.prisma  && yarn prisma generate --schema=prisma/database2/schema.prisma && yarn prisma generate --schema=prisma/database2/schema.prisma "
+    ]
 }
