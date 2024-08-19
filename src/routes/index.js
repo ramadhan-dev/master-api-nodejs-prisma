@@ -27,7 +27,7 @@ app.use('/api/user-location', verifyToken, UserLocationService);
 
 // Endpoint to get log files
 app.get('/logs', (req, res) => {
-    const logDir = path.join('morgan');
+    const logDir = path.join('logs/morgan');
     fs.readdir(logDir, (err, files) => {
         if (err) {
             return res.status(500).send('Unable to read logs');

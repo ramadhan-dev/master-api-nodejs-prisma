@@ -7,7 +7,7 @@ const os = require('os');
 const { getFormattedDate } = require('./../helper/helper');
 
 // Ensure logs directory exists
-const logDir = 'morgan';
+const logDir = 'logs/morgan';
 
 if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
