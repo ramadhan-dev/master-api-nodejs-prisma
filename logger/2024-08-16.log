@@ -1,8 +1,0 @@
-2024-08-16 16:05:43 [info]: {"sql":"BEGIN","params":"[]","duration":19,"timestamp":"2024-08-16T09:05:43.659Z"}
-2024-08-16 16:05:43 [info]: {"sql":"DEALLOCATE ALL","params":"[]","duration":18,"timestamp":"2024-08-16T09:05:43.677Z"}
-2024-08-16 16:05:43 [info]: {"sql":"SELECT \"public\".\"User\".\"id\", \"public\".\"User\".\"email\", \"public\".\"User\".\"name\", \"public\".\"User\".\"password\", \"public\".\"User\".\"tenant_code\", \"public\".\"User\".\"company_code\", \"public\".\"User\".\"division_code\", \"public\".\"User\".\"createdAt\", \"public\".\"User\".\"updatedAt\" FROM \"public\".\"User\" WHERE (\"public\".\"User\".\"email\" = $1 AND 1=1) LIMIT $2 OFFSET $3","params":"[\"testing@gmail.com\",1,0]","duration":40,"timestamp":"2024-08-16T09:05:43.730Z"}
-2024-08-16 16:05:43 [info]: {"sql":"COMMIT","params":"[]","duration":18,"timestamp":"2024-08-16T09:05:43.751Z"}
-2024-08-16 16:13:56 [info]: {"sql":"BEGIN","params":"[]","duration":18,"timestamp":"2024-08-16T09:13:56.177Z"}
-2024-08-16 16:13:56 [info]: {"sql":"DEALLOCATE ALL","params":"[]","duration":17,"timestamp":"2024-08-16T09:13:56.194Z"}
-2024-08-16 16:13:56 [info]: {"sql":"SELECT \"public\".\"User\".\"id\", \"public\".\"User\".\"email\", \"public\".\"User\".\"name\", \"public\".\"User\".\"password\", \"public\".\"User\".\"tenant_code\", \"public\".\"User\".\"company_code\", \"public\".\"User\".\"division_code\", \"public\".\"User\".\"createdAt\", \"public\".\"User\".\"updatedAt\" FROM \"public\".\"User\" WHERE (\"public\".\"User\".\"email\" = $1 AND 1=1) LIMIT $2 OFFSET $3","params":"[\"testing@gmail.com\",1,0]","duration":38,"timestamp":"2024-08-16T09:13:56.234Z"}
-2024-08-16 16:13:56 [info]: {"sql":"COMMIT","params":"[]","duration":18,"timestamp":"2024-08-16T09:13:56.253Z"}

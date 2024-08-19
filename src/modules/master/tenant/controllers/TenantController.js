@@ -19,6 +19,7 @@ class TenantController {
             res.locals.responseBody = JSON.stringify(tenants);
             return res.status(200).json(this.formatResponse(tenants))
         } catch (error) {
+            console.log("🚀 ~ TenantController ~ getAllTenants ~ error:", error)
             return res.status(500).json(this.formatResponse('', 'Failed to get all Tenants', 500))
         }
     }
@@ -38,6 +39,7 @@ class TenantController {
             }
             return res.status(200).json(this.formatResponse(user))
         } catch (error) {
+            console.log("🚀 ~ TenantController ~ getTenant ~ error:", error)
             return res.status(500).json(this.formatResponse('', 'Failed to get Tenant', 500))
         }
     }

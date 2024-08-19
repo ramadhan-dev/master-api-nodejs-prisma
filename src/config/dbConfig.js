@@ -5,6 +5,9 @@ const dbConfig = {
     production: {
         log: ['error'],
     },
+    testing: {
+        log: ['info', 'warn', 'error']
+    }
 };
 
 module.exports = dbConfig;

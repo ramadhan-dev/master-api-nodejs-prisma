@@ -1,4 +1,0 @@
-2024-08-17 00:46:56 [info]: {"sql":"BEGIN","params":"[]","duration":20,"timestamp":"2024-08-16T17:46:56.511Z"}
-2024-08-17 00:46:56 [info]: {"sql":"DEALLOCATE ALL","params":"[]","duration":20,"timestamp":"2024-08-16T17:46:56.529Z"}
-2024-08-17 00:46:56 [info]: {"sql":"SELECT \"public\".\"Tenant\".\"id\", \"public\".\"Tenant\".\"tenant_code\", \"public\".\"Tenant\".\"name\", \"public\".\"Tenant\".\"createdAt\", \"public\".\"Tenant\".\"updatedAt\" FROM \"public\".\"Tenant\" WHERE (\"public\".\"Tenant\".\"tenant_code\" = $1 AND 1=1) LIMIT $2 OFFSET $3","params":"[\"Mini\",1,0]","duration":49,"timestamp":"2024-08-16T17:46:56.580Z"}
-2024-08-17 00:46:56 [info]: {"sql":"COMMIT","params":"[]","duration":22,"timestamp":"2024-08-16T17:46:56.603Z"}

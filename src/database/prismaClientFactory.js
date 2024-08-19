@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const { PrismaClient: PrismaClientDb1 } = require('../../prisma/generated/database1');
 const { PrismaClient: PrismaClientDb2 } = require('../../prisma/generated/database2');
+const { PrismaClient: PrismaClientTesting } = require('../../prisma/generated/databaseTesting');
 const logger = require(process.cwd() + '/src/utility/logger');
 
 const dbConfig = require('../config/dbConfig');
@@ -44,6 +45,13 @@ class PrismaClientFactory {
         const connection2 = new PrismaClientDb2(config);
         addPrismaLoggingMiddleware(connection2);
         return connection2
+    }
+
+
+    static createInstanceTesting(env = 'testing') {
+        const config = dbConfig[env] || dbConfig.default;
+        const connectionTesting = new PrismaClientTesting(config);
+        return connectionTesting
     }
 
     
