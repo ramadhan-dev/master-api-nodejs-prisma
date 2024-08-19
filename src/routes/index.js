@@ -9,7 +9,9 @@ const UserRouter = require('../modules/employee/user/routes/userRoute')
 const TenantRoute = require('../modules/master/tenant/routes/tenantRoute')
 const CompanyRoute = require('../modules/master/company/routes/companyRoute')
 const DivisionRoute = require('../modules/master/division/routes/DivisionRoute')
-const UserLocationService = require('../modules/employee/location/routes/UserLocationRoute')
+const UserLocationRoute = require('../modules/employee/location/routes/UserLocationRoute')
+const AttendanceRoute = require('../modules/employee/attendance/routes/AttendanceRoute')
+const ShiftTypeRoute = require('../modules/employee/shift_type/routes/ShiftTypeRoute')
 
 // Middleware 
 const {verifyToken} = require('./../middleware/AuthMiddleware')
@@ -21,7 +23,9 @@ app.use('/api/user', verifyToken, UserRouter);
 app.use('/api/tenant', verifyToken,  TenantRoute);
 app.use('/api/company', verifyToken, CompanyRoute);
 app.use('/api/division', verifyToken, DivisionRoute);
-app.use('/api/user-location', verifyToken, UserLocationService);
+app.use('/api/user-location', verifyToken, UserLocationRoute);
+app.use('/api/attendance', verifyToken, AttendanceRoute);
+app.use('/api/shift-type', verifyToken, ShiftTypeRoute);
 
 
 

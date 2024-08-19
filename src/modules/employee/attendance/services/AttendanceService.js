@@ -1,6 +1,6 @@
 
 
-class UserLocationService {
+class AttendanceService {
     constructor(prismaClient) {
         this.prisma = prismaClient;
     }
@@ -12,7 +12,7 @@ class UserLocationService {
      * @param {*} pageSize 
      * @returns 
      */
-    async getAllUserLocation(page = 1, pageSize = 10, search = '', order = 'asc', orderBy = 'name') {
+    async getAllAttendance(page = 1, pageSize = 10, search = '', order = 'asc', orderBy = 'name') {
         try {
             const currentPage = parseInt(page, 10);
             const limit = parseInt(pageSize, 10);
@@ -29,7 +29,7 @@ class UserLocationService {
 
             const orderByClause = orderBy ? { [orderBy]: order } : { id: 'asc' };
             const [items, totalItems] = await this.prisma.$transaction([
-                this.prisma.UserLocation.findMany({
+                this.prisma.Attendance.findMany({
                     where: where,
                     include: {
                         user: {
@@ -42,7 +42,7 @@ class UserLocationService {
                     take: limit,
                     orderBy: orderByClause,
                 }),
-                this.prisma.UserLocation.count(),
+                this.prisma.Attendance.count(),
             ]);
 
             const totalPages = Math.ceil(totalItems / limit);
@@ -68,9 +68,9 @@ class UserLocationService {
      * @param {*} user_location_id 
      * @returns 
      */
-    async getUserLocationById(user_location_id) {
+    async getAttendanceById(user_location_id) {
         try {
-            return await this.prisma.UserLocation.findUnique({
+            return await this.prisma.Attendance.findUnique({
                 where: { id: parseInt(user_location_id) },
                 include: {
                     user: {
@@ -91,9 +91,9 @@ class UserLocationService {
      * @param {*} data 
      * @returns 
      */
-    async createUserLocation(data) {
+    async createAttendance(data) {
         try {
-            return await this.prisma.UserLocation.create({
+            return await this.prisma.Attendance.create({
                 data,
             });
         } catch (error) {
@@ -108,9 +108,9 @@ class UserLocationService {
      * @param {*} data 
      * @returns 
      */
-    async updateUserLocation(user_location_id, data) {
+    async updateAttendance(user_location_id, data) {
         try {
-            return await this.prisma.UserLocation.update({
+            return await this.prisma.Attendance.update({
                 where: { id: parseInt(user_location_id) },
                 data: data,
             });
@@ -126,9 +126,9 @@ class UserLocationService {
      * @param {*} id 
      * @returns 
      */
-    async deleteUserLocation(company_code) {
+    async deleteAttendance(company_code) {
         try {
-            const deletedItem = await this.prisma.UserLocation.delete({
+            const deletedItem = await this.prisma.Attendance.delete({
                 where: { id: parseInt(company_code) },
             });
             return deletedItem;
@@ -143,30 +143,12 @@ class UserLocationService {
      * @param {*} user_location_id 
      * @returns 
      */
-    async checkUserLocationExists(user_location_id) {
-        return await this.prisma.UserLocation.findUnique({
+    async checkAttendanceExists(user_location_id) {
+        return await this.prisma.Attendance.findUnique({
             where: { id: parseInt(user_location_id) }
-        });
-    }
-
-
-
-    /**
-     * 
-     * @param {*} userId 
-     * @returns 
-     */
-    async getLocationByUserId(userId) {
-        return await this.prisma.UserLocation.findMany({
-            select: {
-                name: true,
-                lat:true,
-                lng:true
-            },
-            where: { userId: parseInt(userId) }
         });
     }
 
 }
 
-module.exports = UserLocationService;
+module.exports = AttendanceService;

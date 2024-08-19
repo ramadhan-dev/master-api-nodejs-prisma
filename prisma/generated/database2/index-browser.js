@@ -167,6 +167,31 @@ exports.Prisma.UserLocationScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AttendanceScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  status: 'status',
+  lat: 'lat',
+  lng: 'lng',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ShiftTypeScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  startTime: 'startTime',
+  endTime: 'endTime'
+};
+
+exports.Prisma.UserShiftScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  shiftId: 'shiftId',
+  shiftDate: 'shiftDate'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -188,7 +213,10 @@ exports.Prisma.ModelName = {
   Company: 'Company',
   Division: 'Division',
   User: 'User',
-  UserLocation: 'UserLocation'
+  UserLocation: 'UserLocation',
+  Attendance: 'Attendance',
+  ShiftType: 'ShiftType',
+  UserShift: 'UserShift'
 };
 
 /**

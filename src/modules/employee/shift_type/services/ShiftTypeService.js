@@ -1,6 +1,6 @@
 
 
-class UserLocationService {
+class ShiftTypeService {
     constructor(prismaClient) {
         this.prisma = prismaClient;
     }
@@ -12,7 +12,7 @@ class UserLocationService {
      * @param {*} pageSize 
      * @returns 
      */
-    async getAllUserLocation(page = 1, pageSize = 10, search = '', order = 'asc', orderBy = 'name') {
+    async getAllShiftType(page = 1, pageSize = 10, search = '', order = 'asc', orderBy = 'name') {
         try {
             const currentPage = parseInt(page, 10);
             const limit = parseInt(pageSize, 10);
@@ -21,7 +21,6 @@ class UserLocationService {
             const where = search
                 ? {
                     OR: [
-                        { division_code: { contains: search.toLowerCase() } },
                         { name: { contains: search.toLowerCase() } },
                     ],
                 }
@@ -29,20 +28,13 @@ class UserLocationService {
 
             const orderByClause = orderBy ? { [orderBy]: order } : { id: 'asc' };
             const [items, totalItems] = await this.prisma.$transaction([
-                this.prisma.UserLocation.findMany({
+                this.prisma.ShiftType.findMany({
                     where: where,
-                    include: {
-                        user: {
-                            select: {
-                                name: true,        // Ambil nama tenant
-                            },
-                        },
-                    },
                     skip: skip,
                     take: limit,
                     orderBy: orderByClause,
                 }),
-                this.prisma.UserLocation.count(),
+                this.prisma.ShiftType.count(),
             ]);
 
             const totalPages = Math.ceil(totalItems / limit);
@@ -65,20 +57,13 @@ class UserLocationService {
 
     /**
      * 
-     * @param {*} user_location_id 
+     * @param {*} shift_type_id 
      * @returns 
      */
-    async getUserLocationById(user_location_id) {
+    async getShiftTypeById(shift_type_id) {
         try {
-            return await this.prisma.UserLocation.findUnique({
-                where: { id: parseInt(user_location_id) },
-                include: {
-                    user: {
-                        select: {
-                            name: true,        // Ambil nama tenant
-                        },
-                    },
-                },
+            return await this.prisma.ShiftType.findUnique({
+                where: { id: parseInt(shift_type_id) },
             });
         } catch (error) {
             throw new Error(`Error Get One tenant`);
@@ -91,9 +76,9 @@ class UserLocationService {
      * @param {*} data 
      * @returns 
      */
-    async createUserLocation(data) {
+    async createShiftType(data) {
         try {
-            return await this.prisma.UserLocation.create({
+            return await this.prisma.ShiftType.create({
                 data,
             });
         } catch (error) {
@@ -104,14 +89,14 @@ class UserLocationService {
 
     /**
      * 
-     * @param {*} user_location_id 
+     * @param {*} shift_type_id 
      * @param {*} data 
      * @returns 
      */
-    async updateUserLocation(user_location_id, data) {
+    async updateShiftType(shift_type_id, data) {
         try {
-            return await this.prisma.UserLocation.update({
-                where: { id: parseInt(user_location_id) },
+            return await this.prisma.ShiftType.update({
+                where: { id: parseInt(shift_type_id) },
                 data: data,
             });
         } catch (error) {
@@ -126,9 +111,9 @@ class UserLocationService {
      * @param {*} id 
      * @returns 
      */
-    async deleteUserLocation(company_code) {
+    async deleteShiftType(company_code) {
         try {
-            const deletedItem = await this.prisma.UserLocation.delete({
+            const deletedItem = await this.prisma.ShiftType.delete({
                 where: { id: parseInt(company_code) },
             });
             return deletedItem;
@@ -140,33 +125,15 @@ class UserLocationService {
 
     /**
      * 
-     * @param {*} user_location_id 
+     * @param {*} shift_type_id 
      * @returns 
      */
-    async checkUserLocationExists(user_location_id) {
-        return await this.prisma.UserLocation.findUnique({
-            where: { id: parseInt(user_location_id) }
-        });
-    }
-
-
-
-    /**
-     * 
-     * @param {*} userId 
-     * @returns 
-     */
-    async getLocationByUserId(userId) {
-        return await this.prisma.UserLocation.findMany({
-            select: {
-                name: true,
-                lat:true,
-                lng:true
-            },
-            where: { userId: parseInt(userId) }
+    async checkShiftTypeExists(shift_type_id) {
+        return await this.prisma.ShiftType.findUnique({
+            where: { id: parseInt(shift_type_id) }
         });
     }
 
 }
 
-module.exports = UserLocationService;
+module.exports = ShiftTypeService;

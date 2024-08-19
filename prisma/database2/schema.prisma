@@ -55,9 +55,10 @@ model User {
   company     Company     @relation(fields: [company_code], references: [company_code])
   division_code  String?
   division    Division?   @relation(fields: [division_code], references: [division_code])
-  // attendances Attendance[]
+  attendances Attendance[]
   // userProjects UserProject[]
   // userRoles   UserRole[]
+  userShifts        UserShift[]
   userLocation   UserLocation[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -76,7 +77,37 @@ model UserLocation {
 }
 
 
+model Attendance {
+  id          Int        @id @default(autoincrement())
+  date        DateTime
+  status      String
+  lat    String
+  lng    String
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
 
+
+model ShiftType {
+  id         Int      @id @default(autoincrement())
+  name  String   @db.VarChar(50)
+  startTime  DateTime @db.Time
+  endTime    DateTime @db.Time
+  userShifts UserShift[]    
+}
+
+
+model UserShift {
+  id         Int        @id @default(autoincrement())
+  userId     Int
+  shiftId    Int
+  shiftDate  DateTime
+  user       User      @relation(fields: [userId], references: [id])
+  shift      ShiftType @relation(fields: [shiftId], references: [id])
+  @@unique([userId, shiftId, shiftDate])
+}
 
 
 // model Role {
@@ -96,15 +127,7 @@ model UserLocation {
 //   updatedAt   DateTime    @updatedAt
 // }
 
-// model Attendance {
-//   id          Int        @id @default(autoincrement())
-//   date        DateTime
-//   status      String
-//   userId      Int
-//   user        User        @relation(fields: [userId], references: [id])
-//   createdAt   DateTime    @default(now())
-//   updatedAt   DateTime    @updatedAt
-// }
+
 
 // model Project {
 //   id          Int        @id @default(autoincrement())
