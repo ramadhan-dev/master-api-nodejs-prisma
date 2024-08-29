@@ -59,7 +59,11 @@ class UserController {
         try {
             const data = req?.body;
             
-            // await this.checkAttrCode(req, res)
+            // Check Email
+            const user = await this.userService.getUserByEmail(data?.email);
+            if (user) {
+                return res.status(400).json(this.formatResponse('', 'User Already Exist', 200))
+            }
             
             const checkPayload = checkAttrCode(req, res, this.tenantService, this.companyService, this.divisionService);
 
@@ -92,6 +96,23 @@ class UserController {
         try {
             const userId = parseInt(req.params.user_id);
             const data = req.body;
+
+
+
+            // Check Email
+            const user = await this.userService.checkUserExists(userId);
+            if (!user) {
+                return res.status(400).json(this.formatResponse('', 'User Not Found', 400))
+            }
+
+
+            if(user?.email != data?.email) {
+                // Check Email
+                const checkEmail = await this.userService.getUserByEmail(data?.email);
+                if (checkEmail) {
+                    return res.status(400).json(this.formatResponse('', 'Email Already Exist', 200))
+                }
+            }
 
             const checkPayload = checkAttrCode(req, res, this.tenantService, this.companyService, this.divisionService);
             checkPayload.then(async (response) => {
