@@ -55,6 +55,12 @@ class CompanyController {
         try {
             const data = req?.body;
 
+            const company = await this.companyService.getCompanyById(String(req.body.company_code));
+            if (company) {
+                return res.status(400).json(this.formatResponse('', 'Company Already Exist', 400))
+            }
+
+
             // Periksa apakah tenant ada
             const tenant = await this.tenantService.checkTenantExists(data.tenant_code);
             if (!tenant) {
@@ -89,6 +95,15 @@ class CompanyController {
             const company = await this.companyService.checkCompanyExists(company_code);
             if (!company) {
                 return res.status(400).json(this.formatResponse('', 'Invalid Company Code', 400))
+            }
+
+
+            if (company_code != data?.company_code) {
+                // Periksa apakah tenant ada
+                const checkCompany = await this.companyService.checkCompanyExists(data?.company_code);
+                if (checkCompany) {
+                    return res.status(400).json(this.formatResponse('', 'Company Already Exist', 400))
+                }
             }
             
             const user = await this.companyService.updateCompany(company_code, data);
