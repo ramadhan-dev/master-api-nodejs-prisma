@@ -59,8 +59,14 @@ class DivisionController {
             const company = await this.companyService.checkCompanyExists(data.company_code);
             if (!company) {
                 return res.status(400).json(this.formatResponse('', 'Invalid Company Code', 400))
-
             }
+
+
+            const division = await this.divisionService.checkDivisionExists(data.division_code);
+            if (division) {
+                return res.status(400).json(this.formatResponse('', 'Division Already Exist', 400))
+            }
+
             const user = await this.divisionService.createDivision(data);
             return res.status(200).json(this.formatResponse(user))
         } catch (error) {
@@ -89,7 +95,14 @@ class DivisionController {
             const division = await this.divisionService.checkDivisionExists(division_code);
             if (!division) {
                 return res.status(400).json(this.formatResponse('', 'Invalid Division Code', 400))
+            }
 
+
+            if (division_code != data?.division_code ) {
+                const checkDivision = await this.divisionService.checkDivisionExists(data?.division_code);
+                if (checkDivision) {
+                    return res.status(400).json(this.formatResponse('', 'Invalid Already Exist', 400))
+                }
             }
             
             const user = await this.divisionService.updateDivision(division_code, data);
