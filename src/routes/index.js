@@ -14,6 +14,8 @@ const AttendanceRoute = require('../modules/employee/attendance/routes/Attendanc
 const ShiftTypeRoute = require('../modules/employee/shift_type/routes/ShiftTypeRoute')
 const UserShiftRoute = require('../modules/employee/user_shift/routes/UserShiftRoute')
 
+const RoleRoute = require('../modules/master/role/routes/RoleRoute')
+
 // Middleware 
 const {verifyToken} = require('./../middleware/AuthMiddleware')
 
@@ -28,6 +30,11 @@ app.use('/api/user-location', verifyToken, UserLocationRoute);
 app.use('/api/attendance', verifyToken, AttendanceRoute);
 app.use('/api/shift-type', verifyToken, ShiftTypeRoute);
 app.use('/api/user-shift', verifyToken, UserShiftRoute);
+
+
+// AUTH
+app.use('/api/role', verifyToken, RoleRoute);
+app.use('/api/user-role', verifyToken, UserShiftRoute);
 
 
 

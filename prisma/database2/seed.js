@@ -31,11 +31,24 @@ async function main() {
     });
 
 
+    await prismaDB2.role.createMany({
+        data: [
+            { name: 'Admin', name: 'code', company_code: 'admin', },
+            { name: 'Employee', name: 'code', company_code: 'employee' },
+        ],
+    });
+    
+
+
     await prismaDB2.user.createMany({
         data: [
             { email: 'testing@gmail.com', name: 'testing', password: '$2a$10$xN8CCMBrKy1hA1COVhx8E.518K7.324ofa7e7RbDbxwWGbbHlkEQ.', company_code: 'C001', tenant_code: 'T001', division_code: 'D001' }
         ],
     });
+
+
+
+    
 
 }
 

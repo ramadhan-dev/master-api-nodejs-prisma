@@ -1,0 +1,235 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+
+model Tenants {
+  id          Int        @id @default(autoincrement())
+  code String     @unique
+  name        String
+  companies   Companies[] 
+  tenant_settings   TenantSettings? @relation
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+
+model TenantSettings {
+  id          Int        @id @default(autoincrement())
+  tenant_code String @unique
+  tenant      Tenants      @relation(fields: [tenant_code], references: [code])
+  total_employee Int
+  status      Boolean
+  expired_date DateTime
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+
+model Companies {
+  id          Int        @id @default(autoincrement())
+  code String     @unique
+  name        String
+  tenant_code String
+  tenant      Tenants      @relation(fields: [tenant_code], references: [code])
+  companies   CompanySettings[] 
+  departments   Departments[] 
+  company_details   CompanyDetails?
+  employee   Employees[] 
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+
+model CompanySettings {
+  id          Int        @id @default(autoincrement())
+  company_code String
+  company      Companies      @relation(fields: [company_code], references: [code])
+  total_employee Int
+  status      Boolean
+  expired_date DateTime
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+
+model CompanyDetails {
+  id          Int        @id @default(autoincrement())
+  company_code String @unique
+  company      Companies      @relation(fields: [company_code], references: [code])
+  contact String?
+  address      String?
+  phone      String?
+  mobile      String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+
+enum Status {
+  active
+  inactive
+  on_leave
+}
+
+model Employees {
+  id          Int        @id @default(autoincrement())
+  code String @unique
+  company_code String @unique
+  company      Companies      @relation(fields: [company_code], references: [code])
+  // first_name      String @db.VarChar(50)
+  first_name      String 
+  last_name      String 
+  email      String 
+  phone_number      String 
+  hire_date      DateTime 
+  job_title      String 
+  dapartement_history      EmployeeDepartments[] 
+  job_history      JobHistories[] 
+  user   Users? @relation
+  employee_detail   EmployeeDetails? @relation
+  salary      Decimal @db.Decimal(10, 2) 
+  status Status
+}
+
+
+enum Gender {
+  male
+  female
+}
+
+model EmployeeDetails {
+  id          Int        @id @default(autoincrement())
+  code String @unique
+  employee_code String @unique
+  employee      Employees      @relation(fields: [employee_code], references: [code])
+  address      String 
+  date_of_birth      DateTime 
+  gender      Gender 
+  nationality      String 
+  emergency_contact      String 
+}
+
+
+model JobHistories {
+  id          Int        @id @default(autoincrement())
+  code String @unique
+  employee_code String @unique
+  employee      Employees      @relation(fields: [employee_code], references: [code])
+  company      String 
+  job_title      String 
+  start_date      DateTime 
+  end_date      DateTime 
+}
+
+
+model Departments {
+  id          Int        @id @default(autoincrement())
+  company_code String @unique
+  company      Companies      @relation(fields: [company_code], references: [code])
+  dapartement_history      EmployeeDepartments[] 
+  code String     @unique
+  name        String
+  status Boolean
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+
+model EmployeeDepartments {
+  id         Int       @id @default(autoincrement())
+  employee   Employees  @relation(fields: [employee_code], references: [code])
+  employee_code String
+  department Departments @relation(fields: [dapartement_code], references: [code])
+  dapartement_code String
+  startDate  DateTime
+  endDate    DateTime?
+}
+
+
+model Users {
+  id            Int        @id @default(autoincrement())
+  employee_code String @unique
+  employee      Employees      @relation(fields: [employee_code], references: [code])
+  username      String 
+  password      String 
+  menu          UserMenus[]
+  role          UserRoles[]
+  menu_actions          UserMenuActions[]
+  email         String 
+  status        Boolean
+}
+
+
+model Menus {
+  id          Int        @id @default(autoincrement())
+  code String     @unique
+  name String     @unique
+  url String     @unique
+  menu_action MenuActions[]
+  user_menu UserMenus[]
+}
+
+
+model MenuActions {
+  id          Int        @id @default(autoincrement())
+  code String     @unique
+  name String     @unique
+  menu_code String @unique
+  menu      Menus      @relation(fields: [menu_code], references: [code])
+  user_menu_action UserMenuActions[]
+
+}
+
+
+model Roles {
+  id          Int        @id @default(autoincrement())
+  code String     @unique
+  name String     @unique
+  user_role UserRoles[]
+}
+
+
+model UserMenus {
+  id          Int        @id @default(autoincrement())
+  code String     @unique
+  name String     @unique
+  user_id Int @unique
+  user      Users      @relation(fields: [user_id], references: [id])
+  menu_code String @unique
+  menu      Menus      @relation(fields: [menu_code], references: [code])
+}
+
+
+model UserMenuActions {
+  id          Int        @id @default(autoincrement())
+  user_id Int @unique
+  user      Users      @relation(fields: [user_id], references: [id])
+  menu_action_code String @unique
+  menu_action      MenuActions      @relation(fields: [menu_action_code], references: [code])
+}
+
+
+model UserRoles {
+  id          Int        @id @default(autoincrement())
+  user_id Int @unique
+  user      Users      @relation(fields: [user_id], references: [id])
+  role_code String @unique
+  menu_action      Roles      @relation(fields: [role_code], references: [code])
+}
+
+
+
+
+
+
+
+
+
+
