@@ -76,7 +76,7 @@ const { haversineDistance } = require(process.cwd() + '/src/helper/helper');
                 for (let index = 0; index < userLocation.length; index++) {
                     const { lat, lng, name } = userLocation[index]
                     const distance = haversineDistance(lat, lng, data?.lat, data?.lng)
-                    if (distance < 250) {
+                    if (distance < 550) {
                         status = true
                         break
                     }
@@ -86,14 +86,38 @@ const { haversineDistance } = require(process.cwd() + '/src/helper/helper');
                     return res.status(403).json(this.formatResponse('', 'Action denied: You are not within 250 meters of the allowed location.', 403))
                 }
 
-                const payload = {...data, status:'success'} 
+                let response = ''
+                /**
+                 * CockIn / ClockOut
+                 */
+                if(data?.type == 'clockin') {
+                    const { date, type, lat, lng, ...payload } = { ...data, status: 'success', clockIn: data?.date, clockInLat: data?.lat, clockInLng: data?.lng }
+                    response = await this.attendanceService.createAttendance(payload);
+                
+                } else {
 
-                const response = await this.attendanceService.createAttendance(payload);
+                    const checkAttendance = await this.attendanceService.getAttendanceByDate(data.userId);
+                    if (checkAttendance) {
+                        // Update
+                        const { date, type, lat, lng, userId, ...payload } = { ...data, status: 'success', clockOut: data?.date, clockOutLat: data?.lat, clockOutLng: data?.lng }
+                        response = await this.attendanceService.clockOut(checkAttendance?.id , payload);
+
+                    } else {
+                        // Insert
+                        const { date, type, lat, lng, ...payload } = { ...data, status: 'success', clockOut: data?.date, clockOutLat: data?.lat, clockOutLng: data?.lng }
+                        response = await this.attendanceService.createAttendance(payload);
+                    }
+                }
+
                 return res.status(200).json(this.formatResponse(response))
             } catch (error) {
-                return res.status(500).json(this.formatResponse('', 'Failed to create User Location', 500))
+                console.log("🚀 ~ AttendanceController ~ createAttendance ~ error:", error)
+                return res.status(500).json(this.formatResponse('', 'Failed to create Attendance', 500))
             }
         }
+
+
+
 
 
         /**

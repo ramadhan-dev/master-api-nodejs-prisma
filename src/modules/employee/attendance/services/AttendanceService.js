@@ -1,4 +1,5 @@
-
+const {formatDateToTimestamp} = require(process.cwd() + '/src/helper/helper')
+const { startOfDay, endOfDay } = require('date-fns');
 
 class AttendanceService {
     constructor(prismaClient) {
@@ -88,6 +89,31 @@ class AttendanceService {
 
     /**
      * 
+     * @param {*} user_id 
+     * @returns 
+     */
+    async getAttendanceByDate(user_id) {
+        const now = new Date();
+
+        const start = startOfDay(new Date(now));
+        const end = endOfDay(new Date(now));
+
+        try {
+            return await this.prisma.Attendance.findFirst({
+                where: { 
+                    userId: parseInt(user_id), 
+                    createdAt: {
+                        gte: start, 
+                        lte: end,                       },
+                 },
+            });
+        } catch (error) {
+            throw new Error(`Error Get One tenant`);
+        }
+    }
+
+    /**
+     * 
      * @param {*} data 
      * @returns 
      */
@@ -100,6 +126,25 @@ class AttendanceService {
             throw new Error('Error create tenant');
         }
     }
+
+
+
+    /**
+     * 
+     * @param {*} data 
+     * @returns 
+     */
+    async clockOut(attendance_id, data) {
+        try {
+            return await this.prisma.Attendance.update({
+                where: { id: parseInt(attendance_id) },
+                data:data,
+            });
+        } catch (error) {
+            throw new Error('Error create tenant');
+        }
+    }
+    
 
 
     /**

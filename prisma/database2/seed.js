@@ -19,7 +19,7 @@ async function main() {
         data: [
             { company_code: 'C001', name: 'Company 1', tenant_code: 'T001' },
             { company_code: 'C002', name: 'Company 2', tenant_code: 'T002' },
-        ],
+        ]
     });
 
 
@@ -33,17 +33,16 @@ async function main() {
 
     await prismaDB2.user.createMany({
         data: [
-            { email: 'testing@gmail.com', name:'testing', password: '$2a$10$xN8CCMBrKy1hA1COVhx8E.518K7.324ofa7e7RbDbxwWGbbHlkEQ.', company_code: 'C001', tenant_code: 'T001', division_code: 'D001' }
+            { email: 'testing@gmail.com', name: 'testing', password: '$2a$10$xN8CCMBrKy1hA1COVhx8E.518K7.324ofa7e7RbDbxwWGbbHlkEQ.', company_code: 'C001', tenant_code: 'T001', division_code: 'D001' }
         ],
     });
 
-    console.log('Data seeding completed.');
 }
 
 main()
-    .catch(e => {
-        throw e;
-    })
-    .finally(async () => {
-        await prismaDB2.$disconnect();
-    });
+.catch(e => {
+    throw e;
+})
+.finally(async () => {
+    await prismaDB2.$disconnect();
+});

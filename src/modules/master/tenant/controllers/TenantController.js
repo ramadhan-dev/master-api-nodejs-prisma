@@ -54,6 +54,9 @@ class TenantController {
     async createTenant(req, res) {
         try {
             const data = req?.body;
+
+            // TODO: Penambahan validasi tenant code, jika tenant_code sudah d gunakan tampilkan pesan error
+
             const user = await this.tenantService.createTenant(data);
             return res.status(200).json(this.formatResponse(user))
         } catch (error) {

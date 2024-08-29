@@ -12,7 +12,7 @@ generator client {
 
 model Tenant {
   id          Int        @id @default(autoincrement())
-  tenant_code String      @unique
+  tenant_code String     @unique
   name        String
   companies   Company[]
   users       User[]
@@ -79,10 +79,13 @@ model UserLocation {
 
 model Attendance {
   id          Int        @id @default(autoincrement())
-  date        DateTime
   status      String
-  lat    String
-  lng    String
+  clockInLat    String?
+  clockInLng    String?
+  clockOutLat    String?
+  clockOutLng    String?
+  clockIn    DateTime?
+  clockOut   DateTime?
   userId      Int
   user        User        @relation(fields: [userId], references: [id])
   createdAt   DateTime    @default(now())
@@ -103,10 +106,10 @@ model UserShift {
   id         Int        @id @default(autoincrement())
   userId     Int
   shiftId    Int
-  shiftDate  DateTime
+  date  DateTime
   user       User      @relation(fields: [userId], references: [id])
   shift      ShiftType @relation(fields: [shiftId], references: [id])
-  @@unique([userId, shiftId, shiftDate])
+  @@unique([userId, shiftId, date])
 }
 
 

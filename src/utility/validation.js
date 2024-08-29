@@ -13,7 +13,7 @@ const validate = (schema) => async (req, res, next) => {
     } catch (error) {
         const validationError = fromError(error);
         const formatError = await formatErrorMassage(validationError)
-        return res.status(400).json(formatResponse(formatError))
+        return res.status(400).json(formatResponse(formatError, 'Bad Request', 400))
     }
 }
 
