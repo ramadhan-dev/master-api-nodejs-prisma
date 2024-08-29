@@ -33,13 +33,12 @@ class TenantController {
      */
     async getTenant(req, res) {
         try {
-            const user = await this.tenantService.getTenantById(String(req.params.tenant_code));
-            if (!user) {
+            const tenant = await this.tenantService.getTenantById(String(req.params.tenant_code));
+            if (!tenant) {
                 return res.status(400).json(this.formatResponse('', 'Tenant Not Found', 400))
             }
-            return res.status(200).json(this.formatResponse(user))
+            return res.status(200).json(this.formatResponse(tenant))
         } catch (error) {
-            console.log("🚀 ~ TenantController ~ getTenant ~ error:", error)
             return res.status(500).json(this.formatResponse('', 'Failed to get Tenant', 500))
         }
     }
@@ -55,7 +54,10 @@ class TenantController {
         try {
             const data = req?.body;
 
-            // TODO: Penambahan validasi tenant code, jika tenant_code sudah d gunakan tampilkan pesan error
+            const tenant = await this.tenantService.checkTenantExists(String(req.body.tenant_code));
+            if (tenant) {
+                return res.status(400).json(this.formatResponse('', 'Tenant Already Exist', 400))
+            }
 
             const user = await this.tenantService.createTenant(data);
             return res.status(200).json(this.formatResponse(user))
@@ -74,6 +76,20 @@ class TenantController {
         try {
             const { tenant_code } = req.params;
             const data = req.body;
+
+            const tenant = await this.tenantService.checkTenantExists(String(tenant_code));
+            if (!tenant) {
+                return res.status(400).json(this.formatResponse('', 'Tenant Not Found', 400))
+            }
+
+
+            if (tenant_code != data?.tenant_code) {
+                const checkTenant = await this.tenantService.checkTenantExists(String(data?.tenant_code));
+                if (checkTenant) {
+                    return res.status(400).json(this.formatResponse('', 'Tenant Already Exist', 400))
+                }
+            }
+
             const user = await this.tenantService.updateTenant(tenant_code, data);
             return res.status(200).json(this.formatResponse(user))
         } catch (error) {
