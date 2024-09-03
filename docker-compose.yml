@@ -1,0 +1,95 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+    container_name: node_app
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+      - "5555:5555"
+    depends_on:
+      - db_mysql
+      - db_postgres
+      - redis
+    networks:
+      - backend
+    volumes:
+      - .:/app
+      - /app/node_modules  # Menghindari node_modules overwrite
+    restart: always
+    # user: "1000:1000"  # Jalankan dengan user non-root untuk keamanan
+
+
+  db_mysql:
+    image: mysql:latest
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL: 'false'
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - backend
+    restart: always
+
+
+  #####################
+  # config POSTGRES
+  ####################
+  db_postgres:
+    image: postgres:16.4-alpine3.20
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}  # Tambahkan ini
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    restart: always
+
+
+  ########################
+  # Config Redis
+  ########################
+  redis:
+    image: redis:alpine
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    restart: always
+
+  ########################
+  # Config NGINX
+  ########################
+  nginx:
+    build: ./docker/nginx
+    container_name: nginx_proxy
+    ports:
+      - "5000:80"
+    depends_on:
+      - app
+    networks:
+      - backend
+    restart: always
+
+volumes:
+  mysql_data:
+  postgres_data:
+  jenkins_home:
+
+
+networks:
+  backend:
