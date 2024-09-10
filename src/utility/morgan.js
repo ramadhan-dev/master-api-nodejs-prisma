@@ -7,12 +7,17 @@ const os = require('os');
 const { getFormattedDate } = require('./../helper/helper');
 
 // Ensure logs directory exists
-const logDir = 'logs/morgan';
+const logDir = 'logs';
 
 if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
 }
 
+const logPath = 'logs/morgan';
+
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logPath);
+}
 // Create a write stream (in append mode) for Morgan logs
 const fileName = `access_${getFormattedDate()}.log`;
 const accessLogStream = fs.createWriteStream(path.join(logDir, fileName), { flags: 'a' });

@@ -15,8 +15,9 @@ class DivisionController {
      */
     async getAllDivisions(req, res) {
         try {
+            const { data: {company_code} } = req.user
             const { page, pageSize, search, order, orderBy } = req.query;
-            const company = await this.divisionService.getAllDivisions(page, pageSize, search, order, orderBy);
+            const company = await this.divisionService.getAllDivisions(page, pageSize, search, order, orderBy, company_code);
             res.locals.responseBody = JSON.stringify(company);
             return res.status(200).json(this.formatResponse(company))
         } catch (error) {
@@ -33,12 +34,13 @@ class DivisionController {
      */
     async getDivision(req, res) {
         try {
-            const user = await this.divisionService.getDivisionById(String(req.params.division_code));
-            if (!user) {
+            const { data: { company_code } } = req.user
+            const data = await this.divisionService.getDivisionById(String(req.params.division_code), company_code);
+            if (!data) {
                 return res.status(400).json(this.formatResponse('', 'Division Not Found', 400))
             }
 
-            return res.status(200).json(this.formatResponse(user))
+            return res.status(200).json(this.formatResponse(data))
         } catch (error) {
             return res.status(500).json(this.formatResponse('', 'Failed to get Division', 500))
         }
@@ -54,19 +56,19 @@ class DivisionController {
     async createDivision(req, res) {
         try {
             const data = req?.body;
+            const { data: { company_code } } = req.user
 
-            // Periksa apakah tenant ada
             const company = await this.companyService.checkCompanyExists(data.company_code);
             if (!company) {
                 return res.status(400).json(this.formatResponse('', 'Invalid Company Code', 400))
             }
 
 
-            const division = await this.divisionService.checkDivisionExists(data.division_code);
+            const division = await this.divisionService.checkDivisionExists(data.division_code, company_code);
             if (division) {
                 return res.status(400).json(this.formatResponse('', 'Division Already Exist', 400))
             }
-
+            
             const user = await this.divisionService.createDivision(data);
             return res.status(200).json(this.formatResponse(user))
         } catch (error) {
@@ -82,6 +84,7 @@ class DivisionController {
      */
     async updateDivision(req, res) {
         try {
+            const { data: { company_code } } = req.user
             const { division_code } = req.params;
             const data = req.body;
 
@@ -105,7 +108,7 @@ class DivisionController {
                 }
             }
             
-            const user = await this.divisionService.updateDivision(division_code, data);
+            const user = await this.divisionService.updateDivision(division_code, data, company_code);
             return res.status(200).json(this.formatResponse(user))
         } catch (error) {
             return res.status(500).json(this.formatResponse('', 'Failed to update Employee', 500))

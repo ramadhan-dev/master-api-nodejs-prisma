@@ -7,7 +7,7 @@ const validate = require(process.cwd() + '/src/utility/validation')
 const formatResponse = require(process.cwd() + '/src/utility/responseFormatter');
 
 const UserService = require('../../user/services/UserService')
-const UserLocationService = require('../../location/services/UserLocationService')
+const UserLocationService = require('../../user_location/services/UserLocationService')
 const router = express.Router();
 
 const prismaDB2 = PrismaClientFactory.createInstanceDB2();

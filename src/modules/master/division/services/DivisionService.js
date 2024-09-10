@@ -12,7 +12,7 @@ class DivisionService {
      * @param {*} pageSize 
      * @returns 
      */
-    async getAllDivisions(page = 1, pageSize = 10, search = '', order = 'asc', orderBy = 'name') {
+    async getAllDivisions(page = 1, pageSize = 10, search = '', order = 'asc', orderBy = 'name', company_code ) {
         try {
             const currentPage = parseInt(page, 10);
             const limit = parseInt(pageSize, 10);
@@ -20,12 +20,16 @@ class DivisionService {
 
             const where = search
                 ? {
+                    company_code: company_code, 
                     OR: [
-                        { division_code: { contains: search.toLowerCase() } },  
-                        { name: { contains: search.toLowerCase() } },
-                    ],
+                        { name: { contains: search, mode: 'insensitive' } },
+                        { division_code: { contains: search, mode: 'insensitive' } },
+                    ]
                 }
-                : {};
+                : 
+                { company_code: company_code };
+
+
 
             const orderByClause = orderBy ? { [orderBy]: order } : { id: 'asc' };
             const [items, totalItems] = await this.prisma.$transaction([
@@ -68,10 +72,15 @@ class DivisionService {
      * @param {*} tenantCode 
      * @returns 
      */
-    async getDivisionById(division_code) {
+    async getDivisionById(division_code, company_code) {
         try {
-            return await this.prisma.division.findUnique({
-                where: { division_code },
+            return await this.prisma.division.findFirst({
+                where: { 
+                    AND: [
+                        { company_code: company_code },  
+                        { division_code: division_code }        
+                    ]
+                 },
                 include: {
                     company: {
                         select: {
@@ -93,10 +102,9 @@ class DivisionService {
      */
     async createDivision(data) {
         try {
-            return await this.prisma.division.create({
-                data,
-            });
+            return await this.prisma.division.create({ data });
         } catch (error) {
+            console.log("🚀 ~ DivisionService ~ createDivision ~ error:", error)
             throw new Error('Error create division');
         }
     }
@@ -108,10 +116,16 @@ class DivisionService {
      * @param {*} data 
      * @returns 
      */
-    async updateDivision(division_code, data) {
+    async updateDivision(division_code, data, company_code) {
         try {
             return await this.prisma.division.update({
-                where: { division_code: String(division_code) },
+                where: { 
+                    AND: [
+                        // { company_code: company_code },
+                        { division_code: String(division_code) }
+                    ]
+                    // division_code: String(division_code) 
+                },
                 data: data,
             });
         } catch (error) {
@@ -144,9 +158,14 @@ class DivisionService {
      * @param {*} division_code 
      * @returns 
      */
-    async checkDivisionExists(division_code) {
-        return await this.prisma.division.findUnique({
-            where: { division_code: division_code }
+    async checkDivisionExists(division_code, company_code) {
+        return await this.prisma.division.findFirst({
+            where: {
+                AND: [
+                    { company_code: company_code },
+                    { division_code: division_code }
+                ]
+            }
         });
     }
 

@@ -20,7 +20,7 @@ class UserController {
             const { email, password } = req.body;
 
             let user = await this.userService.getUserByEmail(email); 
-
+            
             if (isNull(user)) {
                 res.status(404).json({ message: "fail", data: "Could not Find this Email!" });
             } else {
@@ -29,7 +29,13 @@ class UserController {
                     res.status(400).json({ message: "fail", data: "Wrong Password!" });
                 } else {
 
-                    let TokenData = { email: user?.email, id: user?.name, }
+                    let TokenData = { 
+                        email: user?.email, 
+                        name: user?.name,
+                        tenant_code: user?.tenant_code,
+                        company_code: user?.company_code,
+                        division_code: user?.division_code, 
+                    }
                     let token = await CreateToken(TokenData);
                     const data = {
                         'token' :token,
