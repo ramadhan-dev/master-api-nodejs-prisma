@@ -50,8 +50,6 @@ class RoleService {
                 },
             };
         } catch (error) {
-            console.log("🚀 ~ RoleService ~ getAllRoles ~ error:", error)
-            
             throw new Error('Error Get All role');
         }
 

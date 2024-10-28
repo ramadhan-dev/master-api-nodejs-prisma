@@ -40,7 +40,6 @@
                 
                 return res.status(200).json(this.formatResponse(user))
             } catch (error) {
-                console.log("🚀 ~ ShiftTypeController ~ getShiftType ~ error:", error)
                 return res.status(500).json(this.formatResponse('', 'Failed to get Shift Type', 500))
             }
         }

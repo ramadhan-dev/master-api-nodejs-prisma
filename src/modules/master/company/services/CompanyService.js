@@ -57,7 +57,6 @@ class CompanyService {
                 },
             };
         } catch (error) {
-            console.log("🚀 ~ CompanyService ~ getAllCompanies ~ error:", error)
             throw new Error('Error Get All tenant');
         }
 

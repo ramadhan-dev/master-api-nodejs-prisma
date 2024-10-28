@@ -48,7 +48,6 @@ function zipOldLogs() {
             const archive = archiver('zip', { zlib: { level: 9 } });
 
             output.on('close', () => {
-                console.log(`Zipped ${archive.pointer()} total bytes`);
                 // Delete old log files after zipping
                 filesToZip.forEach(file => fs.unlinkSync(path.join(logDir, file)));
             });

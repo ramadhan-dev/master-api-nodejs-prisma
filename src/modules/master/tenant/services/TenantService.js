@@ -50,8 +50,6 @@ class TenantService {
                 },
             };
         } catch (error) {
-            console.log("🚀 ~ TenantService ~ getAllTenants ~ error:", error)
-            
             throw new Error('Error Get All tenant');
         }
 

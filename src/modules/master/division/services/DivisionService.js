@@ -104,7 +104,6 @@ class DivisionService {
         try {
             return await this.prisma.division.create({ data });
         } catch (error) {
-            console.log("🚀 ~ DivisionService ~ createDivision ~ error:", error)
             throw new Error('Error create division');
         }
     }

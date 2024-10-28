@@ -109,7 +109,6 @@
                 const response = await this.userShiftService.updateUserShift(user_shift_id, data);
                 return res.status(200).json(this.formatResponse(response))
             } catch (error) {
-                console.log("🚀 ~ UserShiftController ~ updateUserShift ~ error:", error)
                 return res.status(500).json(this.formatResponse('', 'Failed to update User Shift', 500))
             }
         }

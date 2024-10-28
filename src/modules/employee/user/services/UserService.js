@@ -69,7 +69,6 @@ class UserService {
                 },
             };
         } catch (error) {
-            console.log("🚀 ~ UserService ~ getAllUsers ~ error:", error)
             throw new Error('Error Get All User');
         }
 
