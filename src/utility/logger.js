@@ -5,13 +5,18 @@ const path = require('path');
 const fs = require('fs');
 const archiver = require('archiver');
 
-const logDir = 'logs/logger';
+// Ensure logs directory exists
+const logDir = 'logs';
 
-// Create logs directory if not exists
 if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
 }
 
+const logPath = 'logs/morgan';
+
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logPath);
+}
 // Custom log format
 const logFormat = printf(({ level, message, timestamp }) => {
     return `${timestamp} [${level}]: ${message}`;
@@ -27,7 +32,7 @@ const logger = createLogger({
     transports: [
         new transports.Console(),
         new DailyRotateFile({
-            filename: `${logDir}/%DATE%.log`,
+            filename: `${logPath}/%DATE%.log`,
             datePattern: 'YYYY-MM-DD',
             maxFiles: '10d', // Keep only the last 10 log files
         })
@@ -36,7 +41,7 @@ const logger = createLogger({
 
 // Function to zip old logs
 function zipOldLogs() {
-    fs.readdir(logDir, (err, files) => {
+    fs.readdir(logPath, (err, files) => {
         if (err) throw err;
 
         // Filter out log files older than the most recent 10 files
@@ -44,18 +49,18 @@ function zipOldLogs() {
         if (logFiles.length > 10) {
             const filesToZip = logFiles.slice(0, logFiles.length - 10);
 
-            const output = fs.createWriteStream(`${logDir}/archived_logs_${Date.now()}.zip`);
+            const output = fs.createWriteStream(`${logPath}/archived_logs_${Date.now()}.zip`);
             const archive = archiver('zip', { zlib: { level: 9 } });
 
             output.on('close', () => {
                 // Delete old log files after zipping
-                filesToZip.forEach(file => fs.unlinkSync(path.join(logDir, file)));
+                filesToZip.forEach(file => fs.unlinkSync(path.join(logPath, file)));
             });
 
             archive.pipe(output);
 
             filesToZip.forEach(file => {
-                archive.file(path.join(logDir, file), { name: file });
+                archive.file(path.join(logPath, file), { name: file });
             });
 
             archive.finalize();
