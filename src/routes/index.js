@@ -3,11 +3,11 @@ const app = express();
 const fs = require('fs');
 const path = require('path');
 
-const AuthRoute = require('../modules/auth/routes/authRoute')
+const AuthRoute = require('../modules/auth/routes/AuthRoute')
 
-const UserRouter = require('../modules/employee/user/routes/userRoute')
-const TenantRoute = require('../modules/master/tenant/routes/tenantRoute')
-const CompanyRoute = require('../modules/master/company/routes/companyRoute')
+const UserRouter = require('../modules/employee/user/routes/UserRoute')
+const TenantRoute = require('../modules/master/tenant/routes/TenantRoute')
+const CompanyRoute = require('../modules/master/company/routes/CompanyRoute')
 const DivisionRoute = require('../modules/master/division/routes/DivisionRoute')
 const UserLocationRoute = require('../modules/employee/user_location/routes/UserLocationRoute')
 const AttendanceRoute = require('../modules/employee/attendance/routes/AttendanceRoute')

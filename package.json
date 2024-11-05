@@ -7,8 +7,11 @@
     "start": "nodemon index.js",
     "dev": "nodemon index.js",
     "seed": "node prisma/database2/seed.js",
+    "generatedb1": "prisma generate --schema=./prisma/database1/schema.prisma",
+    "generatedb2": "prisma generate --schema=./prisma/database2/schema.prisma",
     "test": "jest",
-    "testing": "jest --verbose $1"
+    "testing": "jest --verbose $1",
+    "build": "node index.js"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +32,7 @@
     "mongoose": "^8.4.4",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.14",
+    "redis": "^4.7.0",
     "response-powered-by": "^1.0.4",
     "slugify": "^1.6.6",
     "zod": "^3.23.8",
