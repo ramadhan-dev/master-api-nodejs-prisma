@@ -1,0 +1,351 @@
+datasource db {
+  provider  = "postgresql"
+  // url      = "postgresql://postgres.kmtzopdlijuglphypvuj:8rARigH_4q7cHTs@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/database2"
+}
+
+model Tenant {
+  id          Int       @id @default(autoincrement())
+  tenant_code String    @unique
+  name        String
+  companies   Company[]
+  user        User[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Company {
+  id                  Int                  @id @default(autoincrement())
+  company_code        String
+  name                String
+  tenant_code         String
+  tenant              Tenant               @relation(fields: [tenant_code], references: [tenant_code])
+  divisions           Division[]
+  user_history        UserCompanyHistory[]
+  user                User[]
+  attendance_location AttendanceLocation[]
+  sift_type           ShiftType[]
+  menu                CompanyMenu[]
+  // menuAction MenuAction[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  @@unique([tenant_code, company_code]) // Compound unique constraint
+}
+
+model Division {
+  id            Int                   @id @default(autoincrement())
+  division_code String
+  name          String
+  company_code  String
+  tenant_code   String
+  company       Company               @relation(fields: [tenant_code, company_code], references: [tenant_code, company_code])
+  user_history  UserDivisionHistory[]
+  user          User[]
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  @@unique([tenant_code, company_code, division_code])
+}
+
+enum EmployeeStatus {
+  Active
+  Inactive
+}
+
+model User {
+  id                   Int                      @id @default(autoincrement())
+  user_code            String
+  email                String                   @unique
+  name                 String
+  password             String
+  status               EmployeeStatus
+  company_history      UserCompanyHistory[]
+  division_history     UserDivisionHistory[]
+  tenant_code          String
+  tenant               Tenant                   @relation(fields: [tenant_code], references: [tenant_code])
+  company_code         String
+  company              Company                  @relation(fields: [company_code, tenant_code], references: [company_code, tenant_code])
+  division_code        String
+  division             Division                 @relation(fields: [division_code, tenant_code, company_code], references: [division_code, tenant_code, company_code])
+  attendances_location UserAttendanceLocation[]
+  user_attendance      UserAttendance[]
+  roles                UserRole[]
+  user_shifts          UserShift[]
+  // userLocation   UserLocation[]
+  userMenus            UserMenu[]
+  userMenuAction       UserMenuAction[]
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+
+  @@unique([tenant_code, company_code, division_code, user_code])
+}
+
+model UserCompanyHistory {
+  id            Int       @id @default(autoincrement())
+  user_code     String
+  company_code  String
+  division_code String
+  tenant_code   String
+  startDate     DateTime
+  endDate       DateTime?
+  user          User      @relation(fields: [user_code, tenant_code, company_code, division_code], references: [user_code, tenant_code, company_code, division_code])
+  company       Company   @relation(fields: [tenant_code, company_code], references: [tenant_code, company_code])
+
+  @@unique([user_code, tenant_code, company_code, startDate])
+}
+
+model UserDivisionHistory {
+  id            Int       @id @default(autoincrement())
+  user_code     String
+  division_code String
+  company_code  String
+  tenant_code   String
+  startDate     DateTime
+  endDate       DateTime?
+  user          User      @relation(fields: [user_code, tenant_code, company_code, division_code], references: [user_code, tenant_code, company_code, division_code])
+  division      Division  @relation(fields: [tenant_code, division_code, company_code], references: [tenant_code, division_code, company_code])
+
+  @@unique([user_code, tenant_code, division_code, company_code, startDate])
+}
+
+model AttendanceLocation {
+  id                       Int                      @id @default(autoincrement())
+  user_attendance_location UserAttendanceLocation[]
+  company_code             String
+  attendance_location_code String
+  tenant_code              String
+  company                  Company                  @relation(fields: [company_code, tenant_code], references: [company_code, tenant_code])
+  name                     String
+  lat                      String
+  lng                      String
+  createdAt                DateTime                 @default(now())
+  updatedAt                DateTime                 @updatedAt
+
+  @@unique([tenant_code, company_code, attendance_location_code])
+}
+
+model UserAttendanceLocation {
+  id                            Int                @id @default(autoincrement())
+  name                          String
+  user_attendance_loaction_code String
+  user_code                     String
+  company_code                  String
+  tenant_code                   String
+  division_code                 String
+  user                          User               @relation(fields: [user_code, tenant_code, company_code, division_code], references: [user_code, tenant_code, company_code, division_code])
+  attendance_location_code      String
+  location                      AttendanceLocation @relation(fields: [attendance_location_code, company_code, tenant_code], references: [attendance_location_code, company_code, tenant_code])
+  createdAt                     DateTime           @default(now())
+  updatedAt                     DateTime           @updatedAt
+
+  @@unique([tenant_code, company_code, user_attendance_loaction_code, user_code, division_code])
+}
+
+model UserAttendance {
+  id            Int       @id @default(autoincrement())
+  status        String
+  clockInLat    String?
+  clockInLng    String?
+  clockOutLat   String?
+  clockOutLng   String?
+  clockIn       DateTime?
+  clockOut      DateTime?
+  company_code  String
+  tenant_code   String
+  division_code String
+  user_code     String
+  user          User      @relation(fields: [user_code, tenant_code, company_code, division_code], references: [user_code, tenant_code, company_code, division_code])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([tenant_code, company_code, createdAt, clockInLat, user_code, division_code])
+}
+
+model ShiftType {
+  id           Int         @id @default(autoincrement())
+  name         String      @db.VarChar(50)
+  startTime    DateTime    @db.Time
+  endTime      DateTime    @db.Time
+  user_shifts  UserShift[]
+  company_code String
+  shift_code   String
+  tenant_code  String
+  company      Company     @relation(fields: [company_code, tenant_code], references: [company_code, tenant_code])
+
+  @@unique([tenant_code, company_code, shift_code])
+}
+
+model UserShift {
+  id            Int       @id @default(autoincrement())
+  company_code  String
+  tenant_code   String
+  division_code String
+  user_code     String
+  shift_code    String
+  date          DateTime
+  user          User      @relation(fields: [user_code, tenant_code, company_code, division_code], references: [user_code, tenant_code, company_code, division_code])
+  shift         ShiftType @relation(fields: [shift_code, tenant_code, company_code], references: [shift_code, tenant_code, company_code])
+
+  @@unique([shift_code, tenant_code, company_code, division_code, user_code])
+}
+
+model Role {
+  id        Int        @id @default(autoincrement())
+  role_code String
+  name      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  users     UserRole[]
+
+  @@unique([role_code])
+}
+
+model UserRole {
+  id            Int      @id @default(autoincrement())
+  company_code  String
+  tenant_code   String
+  division_code String
+  user_code     String
+  role_code     String
+  user          User     @relation(fields: [user_code, tenant_code, company_code, division_code], references: [user_code, tenant_code, company_code, division_code])
+  role          Role     @relation(fields: [role_code], references: [role_code])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([tenant_code, company_code, user_code, role_code])
+}
+
+model MasterMenu {
+  id          Int             @id @default(autoincrement())
+  menu_code   String
+  name        String
+  url         String
+  description String
+  sub_menu    MasterSubMenu[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@unique([menu_code])
+}
+
+model MasterSubMenu {
+  id            Int                @id @default(autoincrement())
+  sub_menu_code String
+  menu_code     String
+  menu          MasterMenu         @relation(fields: [menu_code], references: [menu_code])
+  actions       MasterMenuAction[]
+  name          String
+  url           String
+  description   String
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@unique([sub_menu_code, menu_code])
+}
+
+model MasterMenuAction {
+  id            Int              @id @default(autoincrement())
+  sub_menu_code String
+  menu_code     String
+  action_code   String
+  name          String
+  createdAt     DateTime         @default(now())
+  users         UserMenuAction[]
+  sub_menu      MasterSubMenu    @relation(fields: [sub_menu_code, menu_code], references: [sub_menu_code, menu_code])
+  updatedAt     DateTime         @updatedAt
+
+  @@unique([sub_menu_code, action_code])
+}
+
+model CompanyMenu {
+  id            Int        @id @default(autoincrement())
+  menu_code     String
+  tenant_code   String
+  company_code  String
+  sub_menu_code String
+  company       Company    @relation(fields: [tenant_code, company_code], references: [tenant_code, company_code])
+  user_menu     UserMenu[]
+
+  @@unique([tenant_code, company_code, menu_code, sub_menu_code])
+}
+
+model UserMenu {
+  id            Int         @id @default(autoincrement())
+  menu_code     String
+  sub_menu_code String
+  menu          CompanyMenu @relation(fields: [tenant_code, company_code, menu_code, sub_menu_code], references: [tenant_code, company_code, menu_code, sub_menu_code])
+  company_code  String
+  tenant_code   String
+  division_code String
+  user_code     String
+  user          User        @relation(fields: [user_code, tenant_code, company_code, division_code], references: [user_code, tenant_code, company_code, division_code])
+  status        Boolean
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([menu_code, company_code, tenant_code, division_code, user_code, sub_menu_code])
+}
+
+model UserMenuAction {
+  id            Int              @id @default(autoincrement())
+  sub_menu_code String
+  action_code   String
+  menu          MasterMenuAction @relation(fields: [sub_menu_code, action_code], references: [sub_menu_code, action_code])
+  company_code  String
+  tenant_code   String
+  division_code String
+  user_code     String
+  user          User             @relation(fields: [user_code, tenant_code, company_code, division_code], references: [user_code, tenant_code, company_code, division_code])
+  status        Boolean
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@unique([sub_menu_code, action_code, company_code, tenant_code, division_code, user_code])
+}
+
+// model Permission {
+//   id          Int        @id @default(autoincrement())
+//   name        String
+//   rolePermissions RolePermission[]
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+// }
+
+// model Project {
+//   id          Int        @id @default(autoincrement())
+//   name        String
+//   company_code String
+//   company     Company     @relation(fields: [company_code], references: [company_code])
+//   userProjects UserProject[]
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+// }
+
+// model UserProject {
+//   id          Int        @id @default(autoincrement())
+//   userId      Int
+//   projectId   Int
+//   user        User        @relation(fields: [userId], references: [id])
+//   project     Project     @relation(fields: [projectId], references: [id])
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+//   @@unique([userId, projectId])
+// }
+
+// model RolePermission {
+//   id          Int        @id @default(autoincrement())
+//   roleId      Int
+//   permissionId Int
+//   role        Role        @relation(fields: [roleId], references: [id])
+//   permission  Permission  @relation(fields: [permissionId], references: [id])
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+//   @@unique([roleId, permissionId])
+// }
