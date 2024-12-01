@@ -7,7 +7,7 @@ WORKDIR /app
 # Salin package.json dan package-lock.json
 COPY package.json ./
 
-# Install dependencies
+# Install dependencies 
 RUN npm install --production
 RUN npm install -g nodemon  # Install nodemon secara global
 RUN npm install -g prisma
